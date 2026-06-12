@@ -1,253 +1,124 @@
-# Couple-Co — Full Stack E-Commerce App
+# Couple-Co 🛍️
 
-A full-stack couple-themed e-commerce application for T-shirts. Built with **React + Vite** on the frontend and **Express.js + MongoDB** on the backend, with **Razorpay** payment gateway integration.
+A full-stack e-commerce platform for a couple-themed clothing store. Built with a **React + Vite** frontend and a **Node.js / Express** REST API backend, backed by **MongoDB**. The project is production-ready with JWT authentication, role-based access control, cart, wishlist, order management, rate limiting, and Docker support.
+
+> ⚠️ **Payment gateway integration is intentionally excluded** and will be added in a future release.
 
 ---
 
-## Overview
+## 📁 Project Structure
 
-| Layer | Stack |
+```
+couple-co/
+├── Backend/          # Express REST API (Node.js)
+└── shop/             # React frontend (Vite)
+```
+
+---
+
+## ✨ Features
+
+### 🛒 Customer-Facing
+- User registration & login with secure JWT authentication (HTTP-only cookies)
+- Access token + refresh token flow
+- Create and update user profile
+- Browse all products, filter by category, filter by price range, search by name
+- Product detail pages
+- Add to cart / update quantities / remove items / clear cart
+- Wishlist — add, remove, check, and clear
+- Place orders
+
+### 🔐 Admin
+- Admin-seeded on server start (no manual setup)
+- Create, update, and delete products
+- View all orders and delete individual orders
+- Remove users and other admins
+- View total user count
+
+### ⚙️ Backend Infrastructure
+- Express 5 with modular route architecture
+- Zod schema validation on all inputs
+- Winston structured logging
+- Express Rate Limiter (1000 req / 15 min per IP)
+- CORS configured for frontend origin
+- Multer for image/file uploads
+- MongoDB with Mongoose ODM
+- Auto-seed admin and products on first boot
+- Custom `ApiError` and `ApiResponse` utility classes
+- Custom 404 HTML page with API docs link
+- Dockerized with a multi-stage-ready `Dockerfile`
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
 |---|---|
-| Frontend | React 19, Vite, Tailwind CSS v4, shadcn/ui, React Router v7 |
-| Backend | Node.js, Express.js v5, MongoDB, Mongoose |
-| Auth | JWT (access + refresh tokens via HTTP-only cookies) |
-| Payments | Razorpay |
+| Frontend | React 19, Vite 8, React Router v7, Axios |
+| UI | Tailwind CSS v4, shadcn/ui, Lucide React |
+| Backend | Node.js, Express 5 |
+| Database | MongoDB, Mongoose |
+| Auth | JWT (access + refresh tokens), bcrypt, HTTP-only cookies |
 | Validation | Zod |
-| File Uploads | Multer |
-| Rate Limiting | express-rate-limit |
 | Logging | Winston |
+| Rate Limiting | express-rate-limit |
+| File Uploads | Multer |
+| Scheduling | node-cron |
+| Dev Tools | Nodemon, Autocannon |
 | Containerization | Docker |
 
 ---
 
-## Monorepo Structure
+## 🚀 Getting Started
 
-```
-couple-co/
-├── shop/          # React frontend (Vite)
-└── Backend/       # Express.js API server
-```
+### Prerequisites
 
----
-
-## Frontend — `shop/`
-
-### Tech Stack
-
-- **React 19** + **Vite 8**
-- **Tailwind CSS v4** (via `@tailwindcss/vite`)
-- **shadcn/ui** components
-- **React Router v7** for client-side routing
-- **Axios** for API calls (with `withCredentials: true` for cookie-based auth)
-- **Lucide React** for icons
-- **Geist** variable font
-
-### Folder Structure
-
-```
-shop/
-├── index.html
-├── vite.config.js
-├── components.json               # shadcn/ui config
-│
-└── src/
-    ├── main.jsx                  # React entry point
-    ├── App.jsx                   # Router + route definitions
-    ├── index.css / App.css       # Global styles
-    │
-    ├── lib/
-    │   ├── api.js                # Axios instance (baseURL + credentials)
-    │   └── utils.js              # cn() utility (clsx + tailwind-merge)
-    │
-    ├── context/
-    │   └── AuthContext.jsx       # Global auth state, cart count, wishlist count
-    │
-    ├── components/
-    │   ├── Navbar.jsx            # Sticky nav with cart/wishlist badges
-    │   ├── Login.jsx             # Login form
-    │   ├── Register.jsx          # Registration form
-    │   ├── TshirtCard.jsx        # Product card component
-    │   └── ui/                   # shadcn/ui primitives
-    │       ├── badge.jsx
-    │       ├── button.jsx
-    │       ├── card.jsx
-    │       ├── input.jsx
-    │       ├── label.jsx
-    │       └── navigation-menu.jsx
-    │
-    └── pages/
-        ├── AllTshirts.jsx        # Product listing (home page)
-        ├── Productdetails.jsx    # Single product detail + add to cart
-        ├── Cards.jsx             # Cart page
-        ├── WishlistPage.jsx      # Wishlist page
-        ├── ProfilePage.jsx       # User profile + address
-        └── AdminPage.jsx         # Admin dashboard
-```
-
-### Pages & Routes
-
-| Path | Component | Description |
-|---|---|---|
-| `/` | `AllTshirts` | Product listing (home) |
-| `/allsheets` | `AllTshirts` | Same listing (alternate path) |
-| `/product/:id` | `Productdetails` | Product detail + add to cart |
-| `/cart` | `CartPage` | Cart with quantity controls |
-| `/wishlist` | `WishlistPage` | Saved products |
-| `/profile` | `ProfilePage` | User profile + shipping address |
-| `/admin` | `AdminPage` | Admin dashboard (admin role only) |
-| `/login` | `Login` | Login form |
-| `/register` | `Register` | Register form |
-
-### Auth Context
-
-`AuthContext` provides global state across the app:
-
-```js
-const { user, loading, login, register, logout, cartCount, refreshCartCount, wishlistCount, refreshWishlistCount } = useAuth();
-```
-
-- Checks auth status on mount via `GET /api/user/get-profile`
-- `cartCount` and `wishlistCount` shown as badges in the Navbar
-- Automatically refreshes counts on login
-
-### Environment Variables (Frontend)
-
-Create `shop/.env`:
-
-```env
-VITE_API_URL=http://localhost:4505/api
-```
-
-### Run Frontend
-
-```bash
-cd shop
-npm install
-npm run dev        # http://localhost:5173
-npm run build      # Production build → dist/
-npm run preview    # Preview production build
-```
+- Node.js v18+
+- MongoDB instance (local or Atlas)
+- npm
 
 ---
 
-## Backend — `Backend/`
-
-### Tech Stack
-
-- **Node.js** (ESM modules — `"type": "module"`)
-- **Express.js v5**
-- **MongoDB** via **Mongoose**
-- **JWT** (access token + refresh token in HTTP-only cookies)
-- **bcrypt** for password hashing
-- **Zod** for request validation
-- **Multer** for file uploads
-- **Razorpay** for payments
-- **Winston** for logging
-- **node-cron** for scheduled tasks
-- **express-rate-limit** — 100 req / 15 min per IP
-
-### Folder Structure
-
-```
-Backend/
-├── server.js                        # Entry — starts server, DB, seeds
-├── index.js                         # Express app, middleware, route mounts
-├── Dockerfile
-├── .env
-├── package.json
-│
-├── public/
-│   ├── images/                      # Static assets
-│   └── temp/                        # Temp upload storage
-│
-└── src/
-    ├── config/
-    │   ├── mongoos.config.js        # MongoDB connection
-    │   ├── seed.admin.js            # Seeds default admin on startup
-    │   └── seed.products.js         # Seeds default products on startup
-    │
-    ├── middlewares/
-    │   ├── jwt.auth.js              # JWT verification
-    │   ├── access.control.js        # Role-based access (admin/user)
-    │   ├── multer.js                # File upload config
-    │   └── zod.validation.js        # Body validation middleware
-    │
-    ├── Users/
-    │   ├── users.schema.js          # User model
-    │   ├── user.profile.schema.js   # Profile/address model
-    │   ├── users.repo.js
-    │   ├── users.controller.js
-    │   └── users.routs.js
-    │
-    ├── products/
-    │   ├── product.schema.js
-    │   ├── product.repo.js
-    │   ├── product.controller.js
-    │   └── product.routs.js
-    │
-    ├── Orders/
-    │   ├── card.schema.js           # Cart item model
-    │   ├── order.schema.js          # Order model
-    │   ├── payment.schema.js        # Payment model (Razorpay fields)
-    │   ├── wishlist.schema.js
-    │   ├── orders.repo.js           # Cart + Order DB logic
-    │   ├── order.controller.js      # Cart + Order controllers
-    │   ├── order.payment.js         # Razorpay payment controller
-    │   ├── order.routs.js           # Cart + Order routes
-    │   ├── payment.routs.js         # Payment routes
-    │   ├── wishlist.repo.js
-    │   ├── wishlist.controller.js
-    │   └── wishlist.routs.js
-    │
-    ├── User_Admin_Management/
-    │   ├── management.repo.js
-    │   ├── management.controller.js
-    │   └── management.routs.js
-    │
-    └── util/
-        ├── api.response.js          # Standard success wrapper
-        ├── api.error.js             # Standard error wrapper
-        ├── accesstoken.create.js
-        └── refreshtoken.create.js
-```
-
-### Environment Variables (Backend)
-
-Create `Backend/.env`:
-
-```env
-# Server
-PORT=4505
-
-# MongoDB
-MONGODB_CONNECTION_STRING="mongodb+srv://<user>:<password>@cluster.mongodb.net/couple-co"
-
-# JWT
-ACCESSTOKEN_KEY="your_access_token_secret"
-REFRESHTOKEN_KEY="your_refresh_token_secret"
-
-# Frontend (CORS)
-FRONTEND_URL="http://localhost:5173"
-
-# Razorpay
-RAZORPAY_KEY_ID="rzp_test_xxxxxxxxxx"
-RAZORPAY_KEY_SECRET="your_razorpay_key_secret"
-RAZORPAY_WEBHOOK_SECRET="your_webhook_secret"
-```
-
-> Get Razorpay keys from **Dashboard → Settings → API Keys**.  
-> Get the webhook secret from **Dashboard → Webhooks** when you register the endpoint.
-
-### Run Backend
+### Backend Setup
 
 ```bash
 cd Backend
 npm install
-npm install razorpay        # if not already installed
-npm run dev                 # nodemon server.js — http://localhost:4505
 ```
 
-### Docker
+Create a `.env` file (use `.env.example` as reference):
+
+```env
+PORT=4505
+MONGODB_CONNECTION_STRING="your_mongodb_connection_string"
+ACCESSTOKEN_KEY="your_access_token_secret"
+REFRESHTOKEN_KEY="your_refresh_token_secret"
+FRONTEND_URL="http://localhost:5173"
+```
+
+Start the server:
+
+```bash
+npm run dev
+```
+
+The server will start on `http://localhost:4505`. On first run it will automatically seed the admin account and product catalogue.
+
+---
+
+### Frontend Setup
+
+```bash
+cd shop
+npm install
+npm run dev
+```
+
+The frontend runs on `http://localhost:5173` by default.
+
+---
+
+### Docker (Backend)
 
 ```bash
 cd Backend
@@ -257,43 +128,21 @@ docker run -p 4505:4505 --env-file .env couple-co-backend
 
 ---
 
-## Running Both Together
+## 🔌 API Reference
 
-```bash
-# Terminal 1 — Backend
-cd Backend && npm run dev
+All endpoints are prefixed with `/api`. Rate limiting applies globally to all `/api` routes.
 
-# Terminal 2 — Frontend
-cd shop && npm run dev
-```
-
-Frontend runs at `http://localhost:5173`, proxies API calls to `http://localhost:4505/api`.
-
----
-
-## API Reference
-
-> Base URL: `http://localhost:4505/api`  
-> Auth: JWT in HTTP-only cookie. All frontend requests use `withCredentials: true`.
-
----
-
-### Auth — `/api/user`
+### Auth & Users — `/api/user`
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| POST | `/register` | ✗ | Register new user |
-| POST | `/login` | ✗ | Login — sets JWT cookies |
-| DELETE | `/logout` | ✓ | Logout — clears cookies |
-| POST | `/creatprofile` | ✓ | Create shipping profile |
-| PUT | `/profile-update` | ✓ | Update profile |
-| GET | `/get-profile` | ✓ | Get current user profile |
-| POST | `/refresh-Token` | ✓ | Refresh access + refresh tokens |
-
-**Register / Login body:**
-```json
-{ "name": "Rohan", "email": "rohan@example.com", "password": "pass123" }
-```
+| POST | `/register` | Public | Register a new user |
+| POST | `/login` | Public | Login and receive JWT cookies |
+| POST | `/refresh-Token` | Public | Refresh access token |
+| POST | `/creatprofile` | 🔒 User | Create user profile |
+| PUT | `/profile-update` | 🔒 User | Update user profile |
+| GET | `/get-profile` | 🔒 User | Get current user's profile |
+| DELETE | `/logout` | 🔒 User | Logout and clear cookies |
 
 ---
 
@@ -301,83 +150,42 @@ Frontend runs at `http://localhost:5173`, proxies API calls to `http://localhost
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| GET | `/get-all` | ✗ | All products |
-| GET | `/:id` | ✗ | Product by ID |
-| POST | `/create` | ✓ Admin | Create product |
-| PUT | `/update/:id` | ✓ Admin | Update product |
-| DELETE | `/delete/:id` | ✓ Admin | Delete product |
+| GET | `/get-all` | Public | Get all products |
+| GET | `/:id` | Public | Get product by ID |
+| POST | `/create` | 🔒 Admin | Create a product |
+| PUT | `/update/:id` | 🔒 Admin | Update a product |
+| DELETE | `/delete/:id` | 🔒 Admin | Delete a product |
 
 ---
 
-### Management — `/api/management`
+### Management & Search — `/api/management`
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| GET | `/products` | ✗ | All products (management view) |
-| GET | `/products/search?q=` | ✗ | Search products |
-| GET | `/details/:name` | ✗ | Product by name |
-| GET | `/products/category/:category` | ✗ | Filter by category |
-| GET | `/products/filter/price?min=&max=` | ✗ | Filter by price range |
-| GET | `/products/total/:category` | ✗ | Product count by category |
-| DELETE | `/admin/user/:userid` | ✓ Admin | Remove user |
-| DELETE | `/admin/:adminid` | ✓ Admin | Remove admin |
-| GET | `/admin/totalrevenue` | ✓ Admin | Total revenue |
+| GET | `/products` | Public | Get all products (management view) |
+| GET | `/products/search` | Public | Search products by name |
+| GET | `/details/:name` | Public | Get product details by name |
+| GET | `/products/category/:category` | Public | Filter products by category |
+| GET | `/products/filter/price` | Public | Filter products by price range |
+| GET | `/products/total/:category` | Public | Get total products in a category |
+| GET | `/admin/totalusers` | 🔒 Admin | Get total registered users |
+| DELETE | `/admin/user/:userid` | 🔒 Admin | Remove a user |
+| DELETE | `/admin/:adminid` | 🔒 Admin | Remove an admin |
 
 ---
 
-### Cart — `/api/order`
+### Cart (Orders) — `/api/order`
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| POST | `/create` | ✓ | Add item to cart |
-| GET | `/getall` | ✓ | Get cart items |
-| PUT | `/update?id=&quantity=` | ✓ | Update item quantity |
-| DELETE | `/delete/:id` | ✓ | Remove one cart item |
-| DELETE | `/deleteall` | ✓ | Clear entire cart |
-
-**Add to cart body:**
-```json
-{ "product": "<productId>", "quantity": 1, "size": "M", "price": 499 }
-```
-
----
-
-### Orders — `/api/order`
-
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| POST | `/createorder` | ✓ | Place order from cart |
-| GET | `/admin/all-orders` | ✓ Admin | All orders |
-
-> `POST /createorder` validates stock, deducts inventory, creates order documents, cleans up orphaned cart items, and clears the cart.
-
----
-
-### Payment — `/api/payment`
-
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| POST | `/create-order` | ✓ | Create Razorpay order (step 1) |
-| POST | `/verify` | ✓ | Verify payment signature (step 2) |
-| GET | `/my-payments` | ✓ | User's payment history |
-| GET | `/admin/all` | ✓ Admin | All payments |
-| POST | `/webhook` | ✗ | Razorpay server webhook |
-
-**Create order body:**
-```json
-{ "amount": 1499, "currency": "INR", "orderIds": ["<orderId>"] }
-```
-
-**Verify body:**
-```json
-{
-  "razorpay_order_id": "order_xxx",
-  "razorpay_payment_id": "pay_xxx",
-  "razorpay_signature": "sig_xxx",
-  "paymentId": "<db_payment_id>",
-  "paymentMethod": "UPI"
-}
-```
+| POST | `/create` | 🔒 User | Add item to cart |
+| GET | `/getall` | 🔒 User | Get all cart items |
+| PUT | `/update` | 🔒 User | Update cart item |
+| DELETE | `/delete/:id` | 🔒 User | Remove a cart item |
+| DELETE | `/deleteall` | 🔒 User | Clear entire cart |
+| POST | `/createorder` | 🔒 User | Place an order |
+| GET | `/admin/all-orders` | 🔒 Admin | View all orders |
+| DELETE | `/admin/delete-order/:id` | 🔒 Admin | Delete an order |
 
 ---
 
@@ -385,124 +193,73 @@ Frontend runs at `http://localhost:5173`, proxies API calls to `http://localhost
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| GET | `/` | ✓ | Get wishlist |
-| GET | `/check/:productId` | ✓ | Check if product is wishlisted |
-| POST | `/add/:productId` | ✓ | Add to wishlist |
-| DELETE | `/remove/:productId` | ✓ | Remove from wishlist |
-| DELETE | `/clear` | ✓ | Clear wishlist |
+| GET | `/` | 🔒 User | Get user's wishlist |
+| GET | `/check/:productId` | 🔒 User | Check if product is wishlisted |
+| POST | `/add/:productId` | 🔒 User | Add product to wishlist |
+| DELETE | `/remove/:productId` | 🔒 User | Remove from wishlist |
+| DELETE | `/clear` | 🔒 User | Clear entire wishlist |
 
 ---
 
-## Payment Flow (Razorpay)
+## 🔐 Authentication
 
-### Register route in `index.js`
+This project uses a **dual-token strategy**:
 
-```js
-import paymentRouter from "./src/Orders/payment.routs.js";
-server.use("/api/payment", paymentRouter);
-```
+- **Access Token** — short-lived JWT stored in an HTTP-only cookie (`jwtToken`)
+- **Refresh Token** — long-lived token used to issue a new access token via `POST /api/user/refresh-Token`
 
-### Frontend Integration
-
-```js
-// Step 1 — Create Razorpay order
-const { data } = await api.post("/payment/create-order", {
-  amount: totalAmount,          // in rupees
-  currency: "INR",
-  orderIds: ["<orderId>"]
-});
-
-// Step 2 — Open Razorpay Checkout
-// Add to index.html: <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-const options = {
-  key: data.key,
-  amount: data.amount,
-  currency: data.currency,
-  order_id: data.razorpayOrderId,
-  name: "Couple Chaos",
-  handler: async (response) => {
-    // Step 3 — Verify
-    await api.post("/payment/verify", {
-      ...response,
-      paymentId: data.paymentId,
-      paymentMethod: "UPI"
-    });
-  },
-  theme: { color: "#302b63" }
-};
-new window.Razorpay(options).open();
-```
-
-### Webhook (Production)
-
-Register `https://yourdomain.com/api/payment/webhook` in Razorpay Dashboard → Webhooks.  
-Subscribe to: `payment.captured`, `payment.failed`, `refund.created`.
+Role-based access is enforced via the `AccessControl` middleware. Roles: `user` and `admin`.
 
 ---
 
-## Data Models
+## 🗂️ Frontend Pages
 
-### User
-```
-name, email, password (bcrypt), role (user | admin), refreshToken
-```
-
-### Profile
-```
-user (ref), fullName, phone, addressLine1, addressLine2,
-city, state, postalCode, country, landmark, addressType
-```
-
-### Product
-```
-name, description, price, stock, category, images[], size[]
-```
-
-### Cart (card)
-```
-user (ref), product (ref), quantity, size, price, total
-```
-
-### Order
-```
-userId (ref), productId (ref), shippingAddress (embedded),
-quantity, price, totalAmount,
-status: Pending | Shipped | Delivered | Cancelled
-```
-
-### Payment
-```
-userId (ref), orders[] (ref), amount, currency (INR),
-paymentMethod: UPI | CARD | NET_BANKING | WALLET | COD,
-status: PENDING | SUCCESS | FAILED | REFUNDED,
-razorpayOrderId, razorpayPaymentId, razorpaySignature,
-paidAt, refundedAt
-```
-
-### Wishlist
-```
-user (ref), products[] (ref)
-```
+| Page | Route | Description |
+|---|---|---|
+| Home / All T-shirts | `/` | Product listing |
+| Product Details | `/product/:id` | Individual product view |
+| Cart | `/cart` | Shopping cart |
+| Wishlist | `/wishlist` | Saved items |
+| Profile | `/profile` | User profile |
+| Contact | `/contact` | Contact page |
+| Admin Panel | `/admin` | Admin dashboard |
+| Login | `/login` | Auth |
+| Register | `/register` | Auth |
 
 ---
 
-## Standard Response Format
+## 📦 Production Deployment Checklist
 
-**Success**
-```json
-{ "statusCode": 200, "message": "Operation successful", "data": {} }
-```
-
-**Error**
-```json
-{ "statusCode": 400, "message": "Something went wrong", "error": "Details" }
-```
+- [x] JWT authentication with HTTP-only cookies
+- [x] Bcrypt password hashing
+- [x] Zod input validation on all routes
+- [x] Rate limiting (express-rate-limit)
+- [x] CORS configured for specific frontend origin
+- [x] Winston logging
+- [x] Docker support
+- [x] Environment variable configuration via `.env`
+- [x] Admin and product seeding on startup
+- [ ] Payment gateway *(coming soon)*
 
 ---
 
-## Notes
+## 🗺️ Roadmap
 
-- On first startup `seed.admin.js` and `seed.products.js` auto-run to populate default data.
-- Deleted products are automatically cleaned from cart during order placement.
-- Use `rzp_test_*` keys for development, `rzp_live_*` for production.
-- CORS is configured to allow only `FRONTEND_URL` with credentials.
+- [ ] Razorpay / Stripe payment gateway integration
+- [ ] Order status tracking
+- [ ] Email confirmation on order placement
+- [ ] Product image upload to cloud storage (Cloudinary / S3)
+- [ ] Pagination for product listings
+- [ ] Review and rating system
+
+---
+
+## 👨‍💻 Author
+
+**Rohan Reddy**
+
+---
+
+## 📄 License
+
+ISC
