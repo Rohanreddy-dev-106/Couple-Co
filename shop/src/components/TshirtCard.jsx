@@ -1,41 +1,44 @@
 import { Link } from "react-router-dom";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { ShoppingBag } from "lucide-react";
 
-export default function TshirtCard({ id, image, name, price, size }) {
+export default function TshirtCard({ id, image, name, price, size, stock }) {
   return (
-    <Link to={`/product/${id}`} className="block">
-      <Card className='group premium-card'>
-        {/* Image */}
-        <div className='relative h-64 overflow-hidden bg-gray-100'>
+    <Link to={`/product/${id}`} className="block group">
+      <div className="bg-[#f3f2eb] rounded-3xl p-4 sm:p-6 transition-transform duration-300 group-hover:-translate-y-1">
+        {/* Image Container (Simulating the white card from mockups) */}
+        <div className="bg-white rounded-2xl h-64 sm:h-72 w-full flex items-center justify-center mb-6 shadow-sm overflow-hidden">
           <img
             src={image}
             alt={name}
-            className='h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105'
+            className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500"
           />
-
-          {/* Top badges */}
-          <Badge className='absolute left-3 top-3 bg-black/80 backdrop-blur-sm text-white border-0'>New</Badge>
-
-          <span className='absolute right-3 top-3 rounded-full bg-white/90 backdrop-blur-sm px-3 py-1 text-xs font-bold text-indigo-900 shadow-sm'>
-            ₹{price}
-          </span>
         </div>
 
-        {/* Content */}
-        <CardContent className='space-y-1.5 p-5 text-center'>
-          <h3 className='truncate text-lg font-bold tracking-tight text-gray-900 group-hover:text-indigo-600 transition-colors'>
-            {name}
-          </h3>
+        {/* Content Footer */}
+        <div className="flex flex-col gap-3 px-1 mt-2">
+          {/* Top row: Name & Price */}
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1 min-w-0">
+              <h3 className="text-sm sm:text-base font-black text-black leading-tight mb-1 truncate whitespace-normal line-clamp-2">
+                {name}
+              </h3>
+              {size && (
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider truncate">
+                  {size}
+                </p>
+              )}
+            </div>
+            <p className="text-lg sm:text-xl font-black text-black leading-none shrink-0 pt-0.5">
+              ₹{price}
+            </p>
+          </div>
 
-          <p className='text-sm text-gray-500 font-medium'>{size || "Premium Cotton"}</p>
-
-          <p className='text-xl font-black text-gray-900 pt-1'>₹{price}</p>
-        </CardContent>
-
-        {/* Hover overlay */}
-        <div className='pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-transparent transition duration-300 group-hover:ring-indigo-500/20' />
-      </Card>
+          {/* Bottom row: Stock Indicator */}
+          <div className="w-full py-3 mt-1 bg-[#cfff04] text-black text-[10px] sm:text-xs font-black uppercase tracking-widest rounded-xl text-center shadow-sm">
+            In Stock: {stock !== undefined ? stock : 0}
+          </div>
+        </div>
+      </div>
     </Link>
   );
 }

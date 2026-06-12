@@ -1,6 +1,7 @@
 import productmodel from "../products/product.schema.js";
 import Deleteplease from "../util/user_admin_management.js";
 import orderModel from "../Orders/order.schema.js";
+import Usermodel from "../Users/users.schema.js";
 export default class Managementrepo {
 
     //search product public/admin
@@ -112,14 +113,14 @@ export default class Managementrepo {
             return 0;
         }
     }
-    async totalorderstatus(){
 
-    }
-    async dailysale(){
-
-    }
-    async dailysaleaverage(){
-
+    async totalusers() {
+        try {
+            return await Usermodel.countDocuments({});
+        } catch (error) {
+            console.log("Error counting users:", error.message);
+            return 0;
+        }
     }
 
 }

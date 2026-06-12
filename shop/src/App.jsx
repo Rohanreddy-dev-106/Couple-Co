@@ -27,6 +27,18 @@ function App() {
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/wishlist" element={<WishlistPage />} />
           </Routes>
+          
+          {/* Minimal Black Footer */}
+          <footer className="bg-[#111] text-white py-12 px-6 md:px-12 w-full mt-auto">
+            <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+              <div className="text-xl font-black tracking-tight">CoupleChaos</div>
+              <div className="flex gap-12 font-bold text-sm tracking-wide">
+                <a href="#" className="hover:text-gray-300">Shop</a>
+                <a href="#" className="hover:text-gray-300">Support</a>
+                <a href="#" className="hover:text-gray-300">Legal</a>
+              </div>
+            </div>
+          </footer>
         </div>
       </Router>
     </AuthProvider>

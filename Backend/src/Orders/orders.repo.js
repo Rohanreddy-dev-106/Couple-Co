@@ -178,4 +178,13 @@ export default class OrdersRepo {
         }
     }
 
+    async deleteOrderAdmin(orderId) {
+        try {
+            return await orderModel.findByIdAndDelete(orderId);
+        } catch (error) {
+            console.log("deleteOrder Error:", error.message);
+            throw error;
+        }
+    }
+
 }

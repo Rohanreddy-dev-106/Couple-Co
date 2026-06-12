@@ -1,9 +1,11 @@
 import { useEffect, useState, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import TshirtCard from "../components/TshirtCard.jsx";
 import api from "../lib/api";
 import { Search, SlidersHorizontal, RotateCcw, Tag, IndianRupee, X } from "lucide-react";
 
 export default function AllTshirts() {
+  const location = useLocation();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -151,188 +153,213 @@ export default function AllTshirts() {
   }[activeFilter];
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10">
-      <div className="flex flex-col lg:flex-row gap-8">
+    <div className="min-h-[calc(100vh-80px)] bg-[#fbfbf6] px-4 sm:px-6 py-10">
+      
+      {/* ── HERO SECTION (Only show on default view) ── */}
+      {(activeFilter === "all" && location.pathname === "/") && (
+        <div className="mx-auto max-w-7xl mb-16 mt-4">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-12">
+            
+            {/* Left side: Text */}
+            <div className="flex-1 max-w-2xl animate-fade-in-up opacity-0">
+              <h1 className="text-6xl md:text-8xl font-black text-black leading-[0.9] tracking-tighter mb-6">
+                Wear the joke <br /> first.
+              </h1>
+              <p className="text-lg md:text-xl text-black font-medium mb-8 max-w-md">
+                Oversized tees for campus chaos, office survival, gym excuses, and software bugs.
+              </p>
+              <button 
+                onClick={() => window.scrollTo({ top: 800, behavior: 'smooth' })}
+                className="bg-black text-white px-8 py-4 rounded-full font-black text-sm tracking-widest hover:bg-gray-900 transition-colors cursor-pointer inline-flex items-center hover:scale-105 active:scale-95 duration-200"
+              >
+                SHOP ₹599 TEES
+              </button>
+            </div>
 
+            {/* Right side: Floating Cards Image */}
+            <div className="flex-1 relative h-[300px] md:h-[400px] w-full flex items-center justify-center animate-slide-in-right opacity-0" style={{ animationDelay: '200ms' }}>
+              <div className="relative w-[280px] h-[340px] animate-float">
+                {/* Back Card */}
+                <div className="absolute top-0 right-10 w-[200px] h-[260px] bg-white rounded-3xl shadow-sm rotate-[-10deg] flex items-center justify-center p-6 border border-gray-100 hover:rotate-[-15deg] transition-transform duration-500">
+                  <span className="font-black text-2xl text-gray-300 opacity-50">404</span>
+                </div>
+                {/* Front Card */}
+                <div className="absolute top-10 right-0 w-[200px] h-[260px] bg-white rounded-3xl shadow-xl rotate-[5deg] flex items-center justify-center p-6 z-10 border border-gray-100 hover:rotate-[10deg] hover:scale-105 transition-transform duration-500">
+                  <span className="font-black text-3xl text-black text-center leading-none">NOT<br/>LAZY</span>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+
+          {/* Categories / Tags below Hero */}
+          <div className="flex flex-wrap gap-3 mt-12 animate-fade-in opacity-0" style={{ animationDelay: '400ms' }}>
+            {["Funny", "Relatable", "College", "Office", "Software", "Gym"].map((tag, i) => (
+              <span key={tag} className="bg-white px-5 py-2.5 rounded-full text-sm font-bold border border-gray-200 text-black hover:bg-black hover:text-white transition-colors cursor-pointer animate-pop-in opacity-0" style={{ animationDelay: `${500 + i * 100}ms` }}>
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="mx-auto max-w-7xl flex flex-col lg:flex-row gap-8">
+        
         {/* ── SIDEBAR ── */}
-        <aside className="w-full lg:w-64 shrink-0 h-fit sticky top-4">
-          <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
-
+        <aside className="w-full lg:w-64 shrink-0 h-fit sticky top-24">
+          <div className="rounded-3xl border-2 border-gray-100 bg-white shadow-sm overflow-hidden p-6 space-y-8">
             {/* Header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-gradient-to-r from-indigo-50 to-blue-50">
+            <div className="flex items-center justify-between border-b-2 border-gray-100 pb-4">
               <div className="flex items-center gap-2">
-                <SlidersHorizontal className="h-4 w-4 text-indigo-600" />
-                <span className="font-bold text-gray-900 text-sm">Filters</span>
+                <SlidersHorizontal className="h-5 w-5 text-black" strokeWidth={2.5} />
+                <span className="font-black text-black text-lg">Filters</span>
                 {activeFilter !== "all" && (
-                  <span className="ml-1 bg-indigo-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">1 ON</span>
+                  <span className="ml-2 bg-black text-[#cfff04] text-[10px] font-black px-2 py-0.5 rounded-sm">1 ON</span>
                 )}
               </div>
               {activeFilter !== "all" && (
                 <button
                   onClick={handleResetFilters}
-                  className="flex items-center gap-1 text-xs font-semibold text-red-500 hover:text-red-700 transition cursor-pointer"
+                  className="flex items-center gap-1 text-xs font-bold text-red-500 hover:text-red-700 transition cursor-pointer uppercase tracking-wider"
                 >
-                  <RotateCcw className="h-3 w-3" />
+                  <RotateCcw className="h-3 w-3" strokeWidth={3} />
                   Clear
                 </button>
               )}
             </div>
 
-            <div className="p-5 space-y-6">
-
-              {/* ── SEARCH ── */}
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-2">Search</p>
-                <form onSubmit={handleSearch} className="relative">
-                  <input
-                    type="text"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="e.g. black tee, cotton..."
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 pl-4 pr-9 py-2.5 text-xs text-gray-800 placeholder-gray-400 focus:border-indigo-400 focus:bg-white outline-none transition"
-                  />
-                  {searchTerm ? (
-                    <button
-                      type="button"
-                      onClick={() => { setSearchTerm(""); fetchAllProducts(); }}
-                      className="absolute right-3 top-2.5 text-gray-400 hover:text-red-500 transition cursor-pointer"
-                    >
-                      <X className="h-3.5 w-3.5" />
-                    </button>
-                  ) : (
-                    <button type="submit" className="absolute right-3 top-2.5 text-gray-400 hover:text-indigo-600 transition cursor-pointer">
-                      <Search className="h-3.5 w-3.5" />
-                    </button>
-                  )}
-                </form>
-                <p className="text-[10px] text-gray-400 mt-1">Press Enter or click 🔍 to search</p>
-              </div>
-
-              {/* Divider */}
-              <div className="border-t border-dashed border-gray-200" />
-
-              {/* ── CATEGORIES ── */}
-              <div>
-                <div className="flex items-center gap-1.5 mb-3">
-                  <Tag className="h-3.5 w-3.5 text-indigo-500" />
-                  <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400">Category</p>
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  {categories.map((cat) => {
-                    const isActive = selectedCategory === cat;
-                    return (
-                      <button
-                        key={cat}
-                        onClick={() => handleCategoryFilter(cat)}
-                        className={`flex items-center justify-between text-left text-xs font-semibold py-2.5 px-4 rounded-xl transition-all duration-200 cursor-pointer ${
-                          isActive
-                            ? "bg-indigo-600 text-white shadow-md shadow-indigo-200"
-                            : "bg-gray-50 text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 border border-transparent hover:border-indigo-200"
-                        }`}
-                      >
-                        <span>{cat}</span>
-                        {isActive && <X className="h-3 w-3 opacity-80" />}
-                      </button>
-                    );
-                  })}
-                </div>
-                <p className="text-[10px] text-gray-400 mt-2">Click again to deselect</p>
-              </div>
-
-              {/* Divider */}
-              <div className="border-t border-dashed border-gray-200" />
-
-              {/* ── PRICE ── */}
-              <div>
-                <div className="flex items-center gap-1.5 mb-3">
-                  <IndianRupee className="h-3.5 w-3.5 text-indigo-500" />
-                  <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400">Price Range</p>
-                </div>
-
-                {/* Quick presets */}
-                <div className="grid grid-cols-2 gap-1.5 mb-3">
-                  {pricePresets.map((preset) => {
-                    const isPresetActive =
-                      activeFilter === "price" &&
-                      String(priceRange.min) === String(preset.min) &&
-                      String(priceRange.max) === String(preset.max);
-                    return (
-                      <button
-                        key={preset.label}
-                        onClick={() => applyPricePreset(preset)}
-                        className={`text-[10px] font-semibold py-1.5 px-2 rounded-lg transition-all duration-200 cursor-pointer text-center ${
-                          isPresetActive
-                            ? "bg-indigo-600 text-white shadow-sm"
-                            : "bg-gray-50 text-gray-600 hover:bg-indigo-50 hover:text-indigo-700 border border-gray-200 hover:border-indigo-200"
-                        }`}
-                      >
-                        {preset.label}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* Custom range */}
-                <p className="text-[10px] text-gray-400 mb-2">Or type a custom range — auto applies:</p>
-                <div className="flex gap-2 items-center">
-                  <div className="relative flex-1">
-                    <span className="absolute left-2.5 top-1.5 text-gray-400 text-xs">₹</span>
-                    <input
-                      type="number"
-                      placeholder="Min"
-                      value={priceRange.min}
-                      onChange={(e) => handlePriceChange("min", e.target.value)}
-                      className="w-full rounded-lg border border-gray-200 pl-6 pr-2 py-1.5 text-xs outline-none focus:border-indigo-400 bg-gray-50 focus:bg-white transition"
-                    />
-                  </div>
-                  <span className="text-gray-300 text-sm font-light">—</span>
-                  <div className="relative flex-1">
-                    <span className="absolute left-2.5 top-1.5 text-gray-400 text-xs">₹</span>
-                    <input
-                      type="number"
-                      placeholder="Max"
-                      value={priceRange.max}
-                      onChange={(e) => handlePriceChange("max", e.target.value)}
-                      className="w-full rounded-lg border border-gray-200 pl-6 pr-2 py-1.5 text-xs outline-none focus:border-indigo-400 bg-gray-50 focus:bg-white transition"
-                    />
-                  </div>
-                </div>
-              </div>
-
+            {/* ── SEARCH ── */}
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-3">Search</p>
+              <form onSubmit={handleSearch} className="relative">
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="e.g. funny, gym..."
+                  className="w-full rounded-xl border-2 border-gray-100 bg-[#fbfbf6] pl-4 pr-10 py-3 text-sm text-black placeholder-gray-400 focus:border-black focus:bg-white outline-none transition-colors font-medium"
+                />
+                {searchTerm ? (
+                  <button
+                    type="button"
+                    onClick={() => { setSearchTerm(""); fetchAllProducts(); }}
+                    className="absolute right-3 top-3.5 text-gray-400 hover:text-black transition cursor-pointer"
+                  >
+                    <X className="h-4 w-4" strokeWidth={3} />
+                  </button>
+                ) : (
+                  <button type="submit" className="absolute right-3 top-3.5 text-gray-400 hover:text-black transition cursor-pointer">
+                    <Search className="h-4 w-4" strokeWidth={3} />
+                  </button>
+                )}
+              </form>
+              <p className="text-[10px] font-bold text-gray-400 mt-2 text-center uppercase tracking-widest">
+                Press <span className="text-black bg-gray-100 px-1 rounded-sm">Enter</span> to search
+              </p>
             </div>
+
+            {/* ── CATEGORIES ── */}
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-3 flex items-center gap-2">
+                <Tag className="h-3.5 w-3.5" strokeWidth={3} /> Category
+              </p>
+              <div className="flex flex-col gap-2">
+                {categories.map((cat) => {
+                  const isActive = selectedCategory === cat;
+                  return (
+                    <button
+                      key={cat}
+                      onClick={() => handleCategoryFilter(cat)}
+                      className={`flex items-center justify-between text-left text-sm font-bold py-3 px-4 rounded-xl transition-colors cursor-pointer border-2 ${
+                        isActive
+                          ? "bg-black text-white border-black"
+                          : "bg-[#fbfbf6] text-black hover:bg-gray-100 border-gray-100"
+                      }`}
+                    >
+                      <span>{cat}</span>
+                      {isActive && <X className="h-3 w-3" strokeWidth={3} />}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* ── PRICE ── */}
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-3 flex items-center gap-2">
+                <IndianRupee className="h-3.5 w-3.5" strokeWidth={3} /> Price
+              </p>
+              
+              <div className="grid grid-cols-2 gap-2 mb-4">
+                {pricePresets.map((preset) => {
+                  const isPresetActive =
+                    activeFilter === "price" &&
+                    String(priceRange.min) === String(preset.min) &&
+                    String(priceRange.max) === String(preset.max);
+                  return (
+                    <button
+                      key={preset.label}
+                      onClick={() => applyPricePreset(preset)}
+                      className={`text-xs font-bold py-2 px-2 rounded-xl transition-colors cursor-pointer border-2 text-center ${
+                        isPresetActive
+                          ? "bg-black text-white border-black"
+                          : "bg-[#fbfbf6] text-black hover:bg-gray-100 border-gray-100"
+                      }`}
+                    >
+                      {preset.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="flex gap-2 items-center">
+                <div className="relative flex-1">
+                  <span className="absolute left-3 top-2.5 text-gray-500 font-bold">₹</span>
+                  <input
+                    type="number"
+                    placeholder="Min"
+                    value={priceRange.min}
+                    onChange={(e) => handlePriceChange("min", e.target.value)}
+                    className="w-full rounded-xl border-2 border-gray-100 pl-7 pr-2 py-2.5 text-sm font-bold outline-none focus:border-black bg-[#fbfbf6] focus:bg-white transition-colors"
+                  />
+                </div>
+                <span className="text-gray-400 font-black">-</span>
+                <div className="relative flex-1">
+                  <span className="absolute left-3 top-2.5 text-gray-500 font-bold">₹</span>
+                  <input
+                    type="number"
+                    placeholder="Max"
+                    value={priceRange.max}
+                    onChange={(e) => handlePriceChange("max", e.target.value)}
+                    className="w-full rounded-xl border-2 border-gray-100 pl-7 pr-2 py-2.5 text-sm font-bold outline-none focus:border-black bg-[#fbfbf6] focus:bg-white transition-colors"
+                  />
+                </div>
+              </div>
+            </div>
+
           </div>
         </aside>
 
         {/* ── PRODUCTS SECTION ── */}
         <div className="flex-1 min-w-0">
-
-          {/* Header row */}
-          <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+          {/* Header */}
+          <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
             <div>
-              <h2 className="text-3xl font-black tracking-tight premium-text-gradient">
-                {activeFilter === "all" ? "Our Collection" : "Filtered Results"}
+              <h2 className="text-4xl sm:text-5xl font-black tracking-tight text-black">
+                {activeFilter === "all" ? "Trending Drops" : "Results"}
               </h2>
-              <p className="text-xs text-gray-400 mt-1">
-                {activeFilter === "all"
-                  ? `Showing all ${products.length} products`
-                  : `${products.length} product${products.length !== 1 ? "s" : ""} found`}
-              </p>
             </div>
-
-            {/* Active filter chip */}
+            
             {activeFilter !== "all" && (
-              <div className="flex items-center gap-2 bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-semibold px-3 py-1.5 rounded-full">
+              <div className="flex items-center gap-2 bg-black text-[#cfff04] text-xs font-bold px-3 py-1.5 rounded-sm uppercase tracking-wide">
                 <span>
-                  {activeFilter === "search" && "🔍 "}
-                  {activeFilter === "category" && "🏷️ "}
-                  {activeFilter === "price" && "💰 "}
+                  {activeFilter === "search" && "Search: "}
+                  {activeFilter === "category" && "Category: "}
+                  {activeFilter === "price" && "Price: "}
                   {activeFilterLabel}
                 </span>
-                <button
-                  onClick={handleResetFilters}
-                  className="hover:text-red-600 transition cursor-pointer"
-                >
-                  <X className="h-3 w-3" />
+                <button onClick={handleResetFilters} className="hover:text-white transition cursor-pointer ml-1">
+                  <X className="h-3 w-3" strokeWidth={4} />
                 </button>
               </div>
             )}
@@ -340,43 +367,45 @@ export default function AllTshirts() {
 
           {/* Grid / States */}
           {loading ? (
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {[...Array(8)].map((_, i) => (
-                <div key={i} className="rounded-2xl bg-gray-100 animate-pulse h-72" />
+                <div key={i} className="rounded-3xl bg-[#f3f2eb] animate-pulse h-[350px]" />
               ))}
             </div>
           ) : error ? (
-            <div className="bg-red-50 text-red-600 p-8 rounded-2xl border border-red-100 text-center font-medium">
+            <div className="bg-red-50 text-red-600 p-8 rounded-3xl border-2 border-red-100 text-center font-bold">
               {error}
             </div>
           ) : products.length === 0 ? (
-            <div className="text-center py-24 bg-gray-50/60 rounded-2xl border border-dashed border-gray-200">
-              <p className="text-4xl mb-4">🔍</p>
-              <p className="text-gray-700 font-bold text-lg mb-1">No products found</p>
-              <p className="text-gray-400 text-sm mb-5">Try adjusting your filters or search term</p>
+            <div className="text-center py-24 bg-white rounded-3xl border-2 border-gray-100 shadow-sm">
+              <p className="text-4xl mb-4">😶</p>
+              <p className="text-black font-black text-xl mb-2">No tees found</p>
+              <p className="text-gray-500 font-medium mb-6">Try adjusting your filters or search term</p>
               <button
                 onClick={handleResetFilters}
-                className="text-sm text-white bg-indigo-600 hover:bg-indigo-700 font-semibold px-5 py-2.5 rounded-xl transition cursor-pointer"
+                className="bg-black text-white font-bold px-6 py-3 rounded-xl hover:bg-gray-800 transition cursor-pointer uppercase text-sm tracking-wide"
               >
                 Clear all filters
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-              {products.map((p) => (
-                <TshirtCard
-                  key={p._id}
-                  id={p._id}
-                  name={p.name}
-                  price={p.price}
-                  image={p.images || "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500"}
-                  size={p.sizes ? p.sizes.join(", ") : "S, M, L, XL"}
-                />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12 animate-fade-in-up opacity-0" style={{ animationDelay: '200ms' }}>
+                {products.map((p) => (
+                  <TshirtCard
+                    key={p._id}
+                    id={p._id}
+                    name={p.name}
+                    price={p.price}
+                    image={p.images || "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500"}
+                    size={p.sizes ? p.sizes.join(", ") : "S, M, L, XL"}
+                    stock={p.stock}
+                  />
+                ))}
+              </div>
+            </>
           )}
         </div>
-
       </div>
     </div>
   );

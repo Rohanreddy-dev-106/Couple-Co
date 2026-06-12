@@ -34,6 +34,9 @@ export default function AdminPage() {
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [ordersError, setOrdersError] = useState("");
 
+  // Users state
+  const [totalUsers, setTotalUsers] = useState(0);
+
   // Add form state
   const [formData, setFormData] = useState({
     name: "",
@@ -88,10 +91,23 @@ export default function AdminPage() {
     }
   };
 
+  // Fetch total users
+  const fetchTotalUsers = async () => {
+    try {
+      const res = await api.get("/management/admin/totalusers");
+      if (res.data && res.data.data) {
+        setTotalUsers(res.data.data.totalUsers || 0);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
     if (user && user.role === "admin") {
       fetchProducts();
       fetchOrders();
+      fetchTotalUsers();
     }
   }, [user]);
 
@@ -171,6 +187,19 @@ export default function AdminPage() {
     }
   };
 
+  // Delete Order
+  const handleDeleteOrder = async (orderId) => {
+    if (!window.confirm(`Are you sure you want to delete this order?`)) return;
+
+    try {
+      await api.delete(`/order/admin/delete-order/${orderId}`);
+      setOrders((prev) => prev.filter((o) => o._id !== orderId));
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || "Failed to delete order.");
+    }
+  };
+
   if (authLoading) {
     return (
       <div className="flex h-[80vh] items-center justify-center">
@@ -211,93 +240,106 @@ export default function AdminPage() {
     <div className="mx-auto max-w-7xl px-6 py-10">
       
       {/* HEADER */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
         <div>
-          <h1 className="text-4xl font-black tracking-tight flex items-center gap-2 premium-text-gradient">
-            <Database className="h-8 w-8 text-indigo-600" />
-            Inventory Manager
+          <h1 className="text-4xl md:text-5xl font-black tracking-tight text-black flex items-center gap-3">
+            <Database className="h-10 w-10 text-black" strokeWidth={2.5} />
+            Inventory
           </h1>
-          <p className="text-gray-500 font-medium mt-1">Add products and monitor placed customer orders.</p>
+          <p className="text-gray-500 font-bold mt-2 text-sm uppercase tracking-widest">Add products and monitor orders</p>
         </div>
         
         {/* Toggle tabs */}
-        <div className="flex bg-white/50 backdrop-blur-md p-1.5 rounded-2xl border border-white/60 shadow-inner">
+        <div className="flex gap-2">
           <button
             onClick={() => setActiveTab("inventory")}
-            className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 cursor-pointer ${
+            className={`px-5 py-3 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer uppercase tracking-wider border-2 ${
               activeTab === "inventory"
-                ? "bg-gradient-to-r from-indigo-600 to-blue-600 text-white shadow-md"
-                : "text-gray-600 hover:text-indigo-600 hover:bg-white/50"
+                ? "bg-black text-white border-black"
+                : "bg-white text-gray-500 border-gray-200 hover:border-black hover:text-black"
             }`}>
-            Inventory Status
+            Status
           </button>
           <button
             onClick={() => setActiveTab("orders")}
-            className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 cursor-pointer flex items-center gap-1.5 ${
+            className={`px-5 py-3 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer uppercase tracking-wider border-2 flex items-center gap-2 ${
               activeTab === "orders"
-                ? "bg-gradient-to-r from-indigo-600 to-blue-600 text-white shadow-md"
-                : "text-gray-600 hover:text-indigo-600 hover:bg-white/50"
+                ? "bg-black text-white border-black"
+                : "bg-white text-gray-500 border-gray-200 hover:border-black hover:text-black"
             }`}>
-            <ShoppingBag className="h-4 w-4" />
-            Customer Orders
+            <ShoppingBag className="h-4 w-4" strokeWidth={3} />
+            Orders
           </button>
           <button
             onClick={() => setActiveTab("add")}
-            className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 cursor-pointer flex items-center gap-1.5 ${
+            className={`px-5 py-3 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer uppercase tracking-wider border-2 flex items-center gap-2 ${
               activeTab === "add"
-                ? "bg-gradient-to-r from-indigo-600 to-blue-600 text-white shadow-md"
-                : "text-gray-600 hover:text-indigo-600 hover:bg-white/50"
+                ? "bg-[#cfff04] text-black border-[#cfff04] hover:bg-[#b0e600]"
+                : "bg-white text-gray-500 border-gray-200 hover:border-black hover:text-black"
             }`}>
-            <Plus className="h-4 w-4" />
-            Add New Product
+            <Plus className="h-4 w-4" strokeWidth={3} />
+            Add New
           </button>
         </div>
       </div>
 
       {/* METRICS ROW */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+      <div className="flex flex-wrap gap-4 sm:gap-6 mb-12">
         
-        {/* Total Products */}
-        <div className="premium-card p-6 flex items-center gap-4">
-          <div className="p-3 bg-gradient-to-br from-indigo-50 to-blue-50 rounded-xl text-indigo-600 shadow-inner">
-            <Package className="h-6 w-6" />
+        {/* Total Users */}
+        <div className="flex-1 min-w-[160px] sm:min-w-[200px] bg-white rounded-3xl border-2 border-gray-100 p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 hover:-translate-y-1 transition-transform">
+          <div className="p-3 bg-[#fbfbf6] border-2 border-gray-100 rounded-2xl text-black shrink-0">
+            <User className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2.5} />
           </div>
           <div>
-            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Total Products</p>
-            <h3 className="text-3xl font-black text-gray-900 mt-1">{totalItems}</h3>
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total Users</p>
+            <h3 className="text-2xl sm:text-3xl font-black text-black mt-1 leading-none">{totalUsers}</h3>
+          </div>
+        </div>
+
+        {/* Total Products */}
+        <div className="flex-1 min-w-[160px] sm:min-w-[200px] bg-white rounded-3xl border-2 border-gray-100 p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 hover:-translate-y-1 transition-transform">
+          <div className="p-3 bg-[#fbfbf6] border-2 border-gray-100 rounded-2xl text-black shrink-0">
+            <Package className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2.5} />
+          </div>
+          <div>
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Products</p>
+            <h3 className="text-2xl sm:text-3xl font-black text-black mt-1 leading-none">{totalItems}</h3>
           </div>
         </div>
 
         {/* Low Stock */}
-        <div className="premium-card p-6 flex items-center gap-4">
-          <div className="p-3 bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl text-amber-600 shadow-inner">
-            <AlertTriangle className="h-6 w-6" />
+        <div className="flex-1 min-w-[160px] sm:min-w-[200px] bg-white rounded-3xl border-2 border-gray-100 p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 hover:-translate-y-1 transition-transform">
+          <div className="p-3 bg-red-50 border-2 border-red-100 rounded-2xl text-red-500 shrink-0">
+            <AlertTriangle className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2.5} />
           </div>
           <div>
-            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Low Stock (≤10)</p>
-            <h3 className="text-3xl font-black text-amber-600 mt-1">{lowStockItems}</h3>
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Low Stock</p>
+            <h3 className="text-2xl sm:text-3xl font-black text-red-500 mt-1 leading-none">{lowStockItems}</h3>
           </div>
         </div>
 
         {/* Customer Orders count */}
-        <div className="premium-card p-6 flex items-center gap-4">
-          <div className="p-3 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl text-blue-600 shadow-inner">
-            <ShoppingBag className="h-6 w-6" />
+        <div className="flex-1 min-w-[160px] sm:min-w-[200px] bg-white rounded-3xl border-2 border-gray-100 p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 hover:-translate-y-1 transition-transform">
+          <div className="p-3 bg-[#fbfbf6] border-2 border-gray-100 rounded-2xl text-black shrink-0">
+            <ShoppingBag className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2.5} />
           </div>
           <div>
-            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Total Orders</p>
-            <h3 className="text-3xl font-black text-blue-600 mt-1">{orders.length}</h3>
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Orders</p>
+            <h3 className="text-2xl sm:text-3xl font-black text-black mt-1 leading-none">{orders.length}</h3>
           </div>
         </div>
 
         {/* Total Revenue */}
-        <div className="premium-card p-6 flex items-center gap-4">
-          <div className="p-3 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl text-emerald-600 shadow-inner">
-            <IndianRupee className="h-6 w-6" />
+        <div className="flex-1 min-w-[200px] sm:min-w-[250px] bg-black rounded-3xl border-2 border-black p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 hover:-translate-y-1 transition-transform">
+          <div className="p-3 bg-[#222] rounded-2xl text-[#cfff04] shrink-0">
+            <IndianRupee className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2.5} />
           </div>
           <div>
-            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Total Revenue</p>
-            <h3 className="text-3xl font-black text-emerald-600 mt-1">₹{totalRevenue.toLocaleString("en-IN", { maximumFractionDigits: 2 })}</h3>
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Revenue</p>
+            <h3 className="text-2xl sm:text-3xl font-black text-white mt-1 leading-none whitespace-nowrap">
+              {totalRevenue.toLocaleString("en-IN")}
+            </h3>
           </div>
         </div>
 
@@ -305,76 +347,73 @@ export default function AdminPage() {
 
       {/* TAB CONTENT: INVENTORY LIST */}
       {activeTab === "inventory" && (
-        <div className="bg-white border border-gray-200 rounded-3xl overflow-hidden shadow-xs">
+        <div className="bg-white border-2 border-gray-100 rounded-3xl overflow-hidden shadow-sm animate-fade-in-up">
           
-          <div className="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-            <h3 className="font-bold text-gray-900 flex items-center gap-2">
-              <BarChart3 className="h-5 w-5 text-gray-500" />
+          <div className="px-8 py-6 border-b-2 border-gray-100 flex justify-between items-center bg-[#fbfbf6]">
+            <h3 className="font-black text-black text-xl flex items-center gap-3">
+              <BarChart3 className="h-6 w-6 text-black" strokeWidth={2.5} />
               Stock Overview
             </h3>
-            <span className="text-xs text-gray-400 font-semibold uppercase">{products.length} Products</span>
+            <span className="text-xs text-black font-black uppercase tracking-widest bg-gray-200 px-3 py-1 rounded-sm">{products.length} Products</span>
           </div>
 
           {loading ? (
-            <div className="p-20 text-center">
-              <p className="text-gray-500 animate-pulse font-medium">Loading catalog...</p>
+            <div className="p-24 text-center">
+              <p className="text-gray-500 animate-pulse font-bold tracking-widest uppercase text-sm">Loading catalog...</p>
             </div>
           ) : error ? (
-            <div className="p-10 text-center text-red-500 font-medium">{error}</div>
+            <div className="p-10 text-center text-red-500 font-bold border-2 border-red-100 rounded-xl m-8">{error}</div>
           ) : products.length === 0 ? (
-            <div className="p-20 text-center text-gray-500 font-medium">
+            <div className="p-24 text-center text-gray-500 font-bold uppercase tracking-widest text-sm">
               Inventory is empty. Get started by adding products.
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm text-gray-500 border-collapse">
-                <thead className="bg-gray-50/50 text-xs text-gray-700 uppercase font-semibold border-b">
+              <table className="w-full text-left text-sm text-black border-collapse">
+                <thead className="bg-[#fbfbf6] text-[10px] text-gray-400 uppercase font-black tracking-widest border-b-2 border-gray-100">
                   <tr>
-                    <th scope="col" className="px-6 py-4">Product Info</th>
-                    <th scope="col" className="px-6 py-4">Category</th>
-                    <th scope="col" className="px-6 py-4">Price</th>
-                    <th scope="col" className="px-6 py-4">Stock</th>
-                    <th scope="col" className="px-6 py-4 text-right">Actions</th>
+                    <th scope="col" className="px-8 py-5">Product Info</th>
+                    <th scope="col" className="px-8 py-5">Category</th>
+                    <th scope="col" className="px-8 py-5">Price</th>
+                    <th scope="col" className="px-8 py-5">Stock</th>
+                    <th scope="col" className="px-8 py-5 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-150">
+                <tbody className="divide-y-2 divide-gray-100">
                   {products.map((p) => {
                     const stock = Number(p.stock) || 0;
                     const price = Number(p.price) || 0;
                     const isOutOfStock = stock === 0;
                     const isLowStock = stock > 0 && stock <= 10;
                     return (
-                      <tr key={p._id} className="hover:bg-gray-50/50 transition-colors">
-                        <td className="px-6 py-4 flex items-center gap-3">
+                      <tr key={p._id} className="hover:bg-[#fbfbf6] transition-colors">
+                        <td className="px-8 py-6 flex items-center gap-4">
                           <img
                             src={p.images || "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500"}
                             alt={p.name}
-                            className="h-10 w-10 rounded-lg object-cover bg-gray-50 border"
+                            className="h-14 w-14 rounded-2xl object-cover border-2 border-gray-100 bg-white p-1"
                           />
                           <div>
-                            <span className="font-bold text-gray-900 block">{p.name}</span>
-                            <span className="text-xs text-gray-400">Sizes: {p.sizes?.join(", ") || "None"}</span>
+                            <span className="font-black text-black text-base block">{p.name}</span>
+                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1 block">Sizes: {p.sizes?.join(", ") || "None"}</span>
                           </div>
                         </td>
-                        <td className="px-6 py-4 font-medium text-gray-700">{p.category}</td>
-                        <td className="px-6 py-4 font-bold text-gray-900">₹{price}</td>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-1.5">
-                            <span
-                              className={`h-2.5 w-2.5 rounded-full ${
-                                isOutOfStock ? "bg-red-500" : isLowStock ? "bg-amber-400" : "bg-emerald-500"
-                              }`}
-                            />
-                            <span className={`font-semibold ${isOutOfStock ? "text-red-600" : "text-gray-950"}`}>
+                        <td className="px-8 py-6 font-bold text-gray-500">{p.category}</td>
+                        <td className="px-8 py-6 font-black text-black text-base">₹{price}</td>
+                        <td className="px-8 py-6">
+                          <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-lg border-2 ${
+                            isOutOfStock ? "bg-red-50 border-red-200 text-red-600" : isLowStock ? "bg-amber-50 border-amber-200 text-amber-600" : "bg-gray-50 border-gray-200 text-black"
+                          }`}>
+                            <span className="font-bold text-xs uppercase tracking-widest">
                               {stock} units
                             </span>
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-right">
+                        <td className="px-8 py-6 text-right">
                           <button
                             onClick={() => handleDeleteProduct(p._id, p.name)}
-                            className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition cursor-pointer inline-flex items-center">
-                            <Trash2 className="h-4.5 w-4.5" />
+                            className="p-3 text-red-500 hover:text-white hover:bg-red-500 border-2 border-transparent hover:border-red-600 rounded-xl transition-all cursor-pointer inline-flex items-center active:scale-95">
+                            <Trash2 className="h-5 w-5" strokeWidth={2.5} />
                           </button>
                         </td>
                       </tr>
@@ -389,32 +428,32 @@ export default function AdminPage() {
 
       {/* TAB CONTENT: CUSTOMER ORDERS LIST */}
       {activeTab === "orders" && (
-        <div className="bg-white border border-gray-200 rounded-3xl overflow-hidden shadow-xs">
+        <div className="bg-white border-2 border-gray-100 rounded-3xl overflow-hidden shadow-sm animate-fade-in-up">
           
-          <div className="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-            <h3 className="font-bold text-gray-900 flex items-center gap-2">
-              <ShoppingBag className="h-5 w-5 text-gray-500" />
+          <div className="px-8 py-6 border-b-2 border-gray-100 flex justify-between items-center bg-[#fbfbf6]">
+            <h3 className="font-black text-black text-xl flex items-center gap-3">
+              <ShoppingBag className="h-6 w-6 text-black" strokeWidth={2.5} />
               Customer Orders List
             </h3>
             <button
               onClick={fetchOrders}
-              className="text-xs text-black font-bold hover:underline cursor-pointer">
+              className="text-xs text-black font-black hover:bg-black hover:text-white border-2 border-transparent hover:border-black transition-colors cursor-pointer uppercase tracking-widest px-4 py-2 rounded-xl">
               Refresh Orders
             </button>
           </div>
 
           {ordersLoading ? (
-            <div className="p-20 text-center">
-              <p className="text-gray-500 animate-pulse font-medium">Loading customer orders...</p>
+            <div className="p-24 text-center">
+              <p className="text-gray-500 animate-pulse font-bold tracking-widest uppercase text-sm">Loading customer orders...</p>
             </div>
           ) : ordersError ? (
-            <div className="p-10 text-center text-red-500 font-medium">{ordersError}</div>
+            <div className="p-10 text-center text-red-500 font-bold border-2 border-red-100 rounded-xl m-8">{ordersError}</div>
           ) : orders.length === 0 ? (
-            <div className="p-20 text-center text-gray-500 font-medium">
+            <div className="p-24 text-center text-gray-500 font-bold uppercase tracking-widest text-sm">
               No orders placed yet.
             </div>
           ) : (
-            <div className="divide-y divide-gray-200">
+            <div className="divide-y-2 divide-gray-100">
               {orders.map((order) => {
                 const prod = order.productId || {};
                 const customer = order.userId || {};
@@ -428,49 +467,49 @@ export default function AdminPage() {
                 });
 
                 return (
-                  <div key={order._id} className="p-6 hover:bg-gray-50/30 transition duration-150">
-                    <div className="flex flex-col lg:flex-row gap-6 justify-between">
+                  <div key={order._id} className="p-6 sm:p-8 hover:bg-[#fbfbf6] transition duration-150">
+                    <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 justify-between">
                       
                       {/* Left: Product & Customer details */}
-                      <div className="flex gap-4 flex-1">
+                      <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 flex-1">
                         <img
                           src={prod.images || "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500"}
                           alt={prod.name || "Product"}
-                          className="h-16 w-16 rounded-xl object-cover border bg-gray-50"
+                          className="h-16 w-16 sm:h-20 sm:w-20 rounded-2xl object-cover border-2 border-gray-100 bg-white p-1 shrink-0"
                         />
-                        <div className="space-y-1">
-                          <span className="font-bold text-gray-900 text-base">{prod.name || "T-Shirt Product"}</span>
-                          <div className="flex flex-wrap items-center gap-y-1 gap-x-3 text-xs text-gray-500">
+                        <div className="space-y-2">
+                          <span className="font-black text-black text-xl">{prod.name || "T-Shirt Product"}</span>
+                          <div className="flex flex-wrap items-center gap-y-2 gap-x-4 text-xs font-bold text-gray-400 uppercase tracking-widest">
                             <span className="flex items-center gap-1">
-                              <User className="h-3.5 w-3.5" />
-                              {customer.name || "Guest User"} ({customer.email || "No Email"})
+                              <User className="h-4 w-4" strokeWidth={2.5} />
+                              {customer.name || "Guest User"}
                             </span>
                             <span className="flex items-center gap-1">
-                              <Calendar className="h-3.5 w-3.5" />
+                              <Calendar className="h-4 w-4" strokeWidth={2.5} />
                               {orderDate}
                             </span>
                           </div>
-                          <p className="text-xs font-semibold text-gray-700">
-                            Qty: <span className="font-extrabold">{order.quantity}</span> | Price: <span className="font-extrabold">₹{order.price}</span>
+                          <p className="text-xs font-bold text-black uppercase tracking-widest">
+                            Qty: <span className="font-black text-base">{order.quantity}</span> | Price: <span className="font-black text-base">₹{order.price}</span>
                           </p>
                         </div>
                       </div>
 
                       {/* Right: Address & Total Amount */}
-                      <div className="flex flex-col sm:flex-row gap-6 lg:w-[45%] justify-between text-left">
+                      <div className="flex flex-col sm:flex-row gap-8 lg:w-[45%] justify-between text-left">
                         {/* Shipping details */}
-                        <div className="text-xs text-gray-600 max-w-[280px]">
-                          <span className="font-bold text-gray-900 flex items-center gap-1 mb-1">
-                            <MapPin className="h-3.5 w-3.5 text-gray-500" />
-                            Shipping Details:
+                        <div className="text-xs font-bold text-gray-500 uppercase tracking-wider max-w-[280px]">
+                          <span className="font-black text-black flex items-center gap-2 mb-2 uppercase tracking-widest">
+                            <MapPin className="h-4 w-4 text-black" strokeWidth={2.5} />
+                            Shipping Details
                           </span>
                           {address ? (
-                            <div className="space-y-0.5">
-                              <p className="font-semibold text-gray-800">{address.fullName}</p>
+                            <div className="space-y-1">
+                              <p className="font-black text-black text-sm">{address.fullName}</p>
                               <p>{address.addressLine1}</p>
                               {address.addressLine2 && <p>{address.addressLine2}</p>}
                               <p>{address.city}, {address.state} - {address.postalCode}</p>
-                              <p className="font-semibold">Phone: {address.phone}</p>
+                              <p className="font-black text-black pt-1">Phone: {address.phone}</p>
                             </div>
                           ) : (
                             <p className="text-gray-400 italic">No delivery profile associated.</p>
@@ -480,13 +519,21 @@ export default function AdminPage() {
                         {/* Amount & Status */}
                         <div className="sm:text-right flex flex-col justify-between items-start sm:items-end">
                           <div>
-                            <span className="text-xs font-semibold text-gray-400 block uppercase">Total amount</span>
-                            <span className="text-xl font-black text-gray-950">₹{order.totalAmount}</span>
+                            <span className="text-[10px] font-bold text-gray-400 block uppercase tracking-widest">Total amount</span>
+                            <span className="text-3xl font-black text-black leading-none mt-1 block">₹{order.totalAmount}</span>
                           </div>
-                          
-                          <span className="mt-2 inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-100">
-                            {order.status || "Pending"}
-                          </span>
+                          <div className="mt-4 flex items-center gap-2">
+                            <span className="inline-flex items-center px-4 py-2 rounded-xl text-[10px] uppercase tracking-widest font-black bg-amber-50 text-amber-700 border-2 border-amber-200">
+                              {order.status || "Pending"}
+                            </span>
+                            <button
+                              onClick={() => handleDeleteOrder(order._id)}
+                              className="p-2 rounded-xl bg-red-50 text-red-600 border-2 border-red-100 hover:bg-red-100 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
+                              title="Delete Order"
+                            >
+                              <Trash2 className="h-4 w-4" strokeWidth={2.5} />
+                            </button>
+                          </div>
                         </div>
 
                       </div>
@@ -502,26 +549,26 @@ export default function AdminPage() {
 
       {/* TAB CONTENT: ADD NEW PRODUCT */}
       {activeTab === "add" && (
-        <div className="bg-white border border-gray-200 rounded-3xl p-8 shadow-xs max-w-3xl mx-auto">
-          <h3 className="text-xl font-bold text-gray-950 mb-2">Create Catalog Item</h3>
-          <p className="text-sm text-gray-500 mb-6">Enter specifications to introduce a new t-shirt product.</p>
+        <div className="bg-white border-2 border-gray-100 rounded-3xl p-8 sm:p-12 shadow-sm max-w-3xl mx-auto animate-fade-in-up">
+          <h3 className="text-3xl font-black text-black mb-2 uppercase tracking-tight">Create Catalog Item</h3>
+          <p className="text-[10px] uppercase tracking-widest font-bold text-gray-400 mb-8">Enter specifications to introduce a new t-shirt product.</p>
 
           {formMessage.text && (
             <div
-              className={`mb-6 p-4 rounded-xl text-sm font-medium ${
+              className={`mb-8 p-4 rounded-xl text-sm font-bold border-2 ${
                 formMessage.type === "success"
-                  ? "bg-emerald-50 text-emerald-700 border border-emerald-100"
-                  : "bg-red-50 text-red-700 border border-red-100"
+                  ? "bg-[#cfff04]/20 text-black border-[#cfff04]"
+                  : "bg-red-50 text-red-600 border-red-200"
               }`}>
               {formMessage.text}
             </div>
           )}
 
-          <form onSubmit={handleAddProduct} className="space-y-6">
+          <form onSubmit={handleAddProduct} className="space-y-8">
             
             {/* Product Name */}
             <div className="space-y-2">
-              <label htmlFor="name" className="text-sm font-semibold text-gray-700">Product Name</label>
+              <label htmlFor="name" className="text-xs font-bold text-black uppercase tracking-widest">Product Name</label>
               <input
                 type="text"
                 id="name"
@@ -530,13 +577,13 @@ export default function AdminPage() {
                 value={formData.name}
                 onChange={handleInputChange}
                 placeholder="e.g. Classic Oversized White Tee"
-                className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-black outline-none transition"
+                className="w-full h-14 rounded-xl border-2 border-gray-100 px-5 font-bold text-black placeholder-gray-300 focus:border-black outline-none transition-colors bg-[#fbfbf6] focus:bg-white"
               />
             </div>
 
             {/* Description */}
             <div className="space-y-2">
-              <label htmlFor="description" className="text-sm font-semibold text-gray-700">Description</label>
+              <label htmlFor="description" className="text-xs font-bold text-black uppercase tracking-widest">Description</label>
               <textarea
                 id="description"
                 name="description"
@@ -544,14 +591,14 @@ export default function AdminPage() {
                 value={formData.description}
                 onChange={handleInputChange}
                 placeholder="Details about style, materials, fitting, wash instructions..."
-                className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-black outline-none transition resize-none"
+                className="w-full rounded-xl border-2 border-gray-100 p-5 font-bold text-black placeholder-gray-300 focus:border-black outline-none transition-colors bg-[#fbfbf6] focus:bg-white resize-none"
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
               {/* Price */}
               <div className="space-y-2">
-                <label htmlFor="price" className="text-sm font-semibold text-gray-700">Price (₹)</label>
+                <label htmlFor="price" className="text-xs font-bold text-black uppercase tracking-widest">Price (₹)</label>
                 <input
                   type="number"
                   id="price"
@@ -561,13 +608,13 @@ export default function AdminPage() {
                   value={formData.price}
                   onChange={handleInputChange}
                   placeholder="899"
-                  className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-black outline-none transition"
+                  className="w-full h-14 rounded-xl border-2 border-gray-100 px-5 font-bold text-black placeholder-gray-300 focus:border-black outline-none transition-colors bg-[#fbfbf6] focus:bg-white"
                 />
               </div>
 
               {/* Stock */}
               <div className="space-y-2">
-                <label htmlFor="stock" className="text-sm font-semibold text-gray-700">Initial Stock</label>
+                <label htmlFor="stock" className="text-xs font-bold text-black uppercase tracking-widest">Initial Stock</label>
                 <input
                   type="number"
                   id="stock"
@@ -577,15 +624,15 @@ export default function AdminPage() {
                   value={formData.stock}
                   onChange={handleInputChange}
                   placeholder="100"
-                  className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-black outline-none transition"
+                  className="w-full h-14 rounded-xl border-2 border-gray-100 px-5 font-bold text-black placeholder-gray-300 focus:border-black outline-none transition-colors bg-[#fbfbf6] focus:bg-white"
                 />
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
               {/* Category */}
               <div className="space-y-2">
-                <label htmlFor="category" className="text-sm font-semibold text-gray-700">Category</label>
+                <label htmlFor="category" className="text-xs font-bold text-black uppercase tracking-widest">Category</label>
                 <input
                   type="text"
                   id="category"
@@ -593,13 +640,13 @@ export default function AdminPage() {
                   required
                   value={formData.category}
                   onChange={handleInputChange}
-                  className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-black outline-none transition"
+                  className="w-full h-14 rounded-xl border-2 border-gray-100 px-5 font-bold text-black placeholder-gray-300 focus:border-black outline-none transition-colors bg-[#fbfbf6] focus:bg-white"
                 />
               </div>
 
               {/* Image URL */}
               <div className="space-y-2">
-                <label htmlFor="images" className="text-sm font-semibold text-gray-700">Image URL</label>
+                <label htmlFor="images" className="text-xs font-bold text-black uppercase tracking-widest">Image URL</label>
                 <input
                   type="url"
                   id="images"
@@ -608,14 +655,14 @@ export default function AdminPage() {
                   value={formData.images}
                   onChange={handleInputChange}
                   placeholder="https://images.unsplash.com/photo..."
-                  className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-black outline-none transition"
+                  className="w-full h-14 rounded-xl border-2 border-gray-100 px-5 font-bold text-black placeholder-gray-300 focus:border-black outline-none transition-colors bg-[#fbfbf6] focus:bg-white"
                 />
               </div>
             </div>
 
             {/* Sizes */}
-            <div className="space-y-3">
-              <label className="text-sm font-semibold text-gray-700 block">Available Sizes</label>
+            <div className="space-y-3 pt-4">
+              <label className="text-xs font-bold text-black uppercase tracking-widest block">Available Sizes</label>
               <div className="flex flex-wrap gap-3">
                 {availableSizes.map((size) => {
                   const isSelected = formData.sizes.includes(size);
@@ -624,10 +671,10 @@ export default function AdminPage() {
                       key={size}
                       type="button"
                       onClick={() => handleSizeChange(size)}
-                      className={`h-11 px-5 rounded-xl border text-sm font-semibold transition cursor-pointer ${
+                      className={`h-12 px-6 rounded-xl border-2 font-bold transition-all cursor-pointer hover:-translate-y-1 active:translate-y-0 ${
                         isSelected
                           ? "border-black bg-black text-white"
-                          : "border-gray-200 bg-white text-gray-700 hover:border-gray-300"
+                          : "border-gray-200 bg-white text-gray-500 hover:border-gray-300 hover:text-black"
                       }`}>
                       {size}
                     </button>
@@ -639,7 +686,7 @@ export default function AdminPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full mt-4 h-14 rounded-2xl bg-black text-lg font-bold text-white hover:bg-gray-800 transition cursor-pointer disabled:opacity-50 flex items-center justify-center shadow-md">
+              className="w-full mt-8 h-16 rounded-xl bg-black text-sm tracking-widest font-black uppercase text-white hover:bg-gray-800 transition cursor-pointer disabled:opacity-50 flex items-center justify-center hover:scale-105 active:scale-95 duration-200">
               {submitting ? "Adding Product..." : "Add Product to Inventory"}
             </button>
           </form>

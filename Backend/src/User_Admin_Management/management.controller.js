@@ -55,6 +55,16 @@ export default class Managementcontroller {
         }
     }
 
+    // Get total users
+    async totalusers(req, res) {
+        try {
+            const usersCount = await this._managementrepository.totalusers();
+            return res.status(200).json(new APIResponse(200, "Total users fetched", { totalUsers: usersCount }));
+        } catch (error) {
+            return res.status(500).json(new ApiError(500, "Fetch failed", error.message));
+        }
+    }
+
     //  Product details
     async productdetails(req, res) {
         try {

@@ -18,7 +18,7 @@ export default function ProductPage() {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [wishlistLoading, setWishlistLoading] = useState(false);
 
-  // 🔹 Fetch product
+  //  Fetch product
   useEffect(() => {
     async function getProduct() {
       try {
@@ -134,35 +134,49 @@ export default function ProductPage() {
   if (error || !product) return <p className='p-10 text-center text-red-500 font-medium'>{error || "Product not found"}</p>;
 
   return (
-    <div className='mx-auto max-w-6xl px-6 py-12 grid md:grid-cols-2 gap-12'>
-      {/* IMAGE */}
-      <div className='rounded-3xl premium-card overflow-hidden shadow-2xl flex items-center justify-center max-h-[550px] p-2'>
-        <img
-          src={product.image}
-          alt={product.title}
-          className='w-full h-full object-cover rounded-2xl max-h-[500px] hover:scale-105 transition-transform duration-700'
-        />
+    <div className='mx-auto max-w-7xl px-6 py-12 grid lg:grid-cols-2 gap-12 lg:gap-20 bg-[#fbfbf6] min-h-[calc(100vh-80px)]'>
+      {/* IMAGE CONTAINER */}
+      <div className='bg-[#f3f2eb] rounded-[40px] p-8 md:p-16 flex items-center justify-center min-h-[500px] animate-fade-in-up opacity-0' style={{ animationDelay: '100ms' }}>
+        <div className="bg-white rounded-[32px] w-full max-w-md aspect-[4/5] shadow-sm flex items-center justify-center overflow-hidden">
+          <img
+            src={product.image}
+            alt={product.title}
+            className='w-full h-full object-contain p-8 hover:scale-105 transition-transform duration-700'
+          />
+        </div>
       </div>
 
-      {/* INFO */}
-      <div className='space-y-6 premium-card p-8'>
-        <h1 className='text-4xl font-black tracking-tight premium-text-gradient'>{product.title}</h1>
-        <p className='text-sm text-gray-500 leading-relaxed font-medium'>{product.description}</p>
-        <p className='text-3xl font-bold text-gray-900'>₹{product.price}</p>
+      {/* PRODUCT INFO */}
+      <div className='space-y-8 py-4 animate-slide-in-right opacity-0' style={{ animationDelay: '300ms' }}>
+        <div>
+          <h1 className='text-5xl md:text-6xl font-black tracking-tight text-black mb-4 leading-none'>
+            {product.title}
+          </h1>
+          <div className="flex items-center gap-2 text-base">
+            <span className='font-black text-black text-xl'>₹{product.price}</span>
+            <span className="text-gray-500 font-medium">• Add one more tee and both become ₹499 each.</span>
+          </div>
+        </div>
 
         {/* SIZE SELECTOR */}
-        <div>
-          <p className='mb-3 font-medium text-gray-700'>Select Size</p>
-          <div className='flex gap-3'>
+        <div className="space-y-4">
+          <div className="flex justify-between items-center text-sm font-bold uppercase tracking-wide text-gray-900">
+            <span>Size</span>
+            <button className="underline underline-offset-4 text-gray-500 hover:text-black transition cursor-pointer">
+              Size Guide
+            </button>
+          </div>
+          
+          <div className='flex flex-wrap gap-3'>
             {product.sizes.map((size) => (
               <button
                 key={size}
                 onClick={() => setSelectedSize(size)}
-                className={`h-12 w-14 rounded-xl border font-semibold transition cursor-pointer
+                className={`h-12 flex-1 min-w-[3.5rem] rounded-xl border-2 font-bold transition-all duration-200 cursor-pointer text-sm hover:-translate-y-1 active:translate-y-0
                   ${
                     selectedSize === size
-                      ? "bg-black text-white border-black shadow-sm"
-                      : "border-gray-300 hover:border-black text-gray-700 bg-white"
+                      ? "bg-black text-white border-black"
+                      : "border-gray-200 hover:border-gray-300 text-black bg-white"
                   }`}>
                 {size}
               </button>
@@ -170,52 +184,65 @@ export default function ProductPage() {
           </div>
         </div>
 
-        {/* QUANTITY CONTROLLER */}
-        <div>
-          <p className='mb-3 font-medium text-gray-700'>Quantity (Max 3)</p>
-          <div className='flex items-center gap-4'>
+        {/* QUANTITY CONTROLLER (Hidden in mockup but keeping it minimal) */}
+        <div className="space-y-4">
+          <p className='text-sm font-bold uppercase tracking-wide text-gray-900'>Quantity</p>
+          <div className='flex items-center gap-4 w-fit'>
             <button
               onClick={decreaseQty}
               disabled={quantity === 1}
-              className='h-10 w-10 rounded-lg border text-lg font-bold cursor-pointer bg-white text-gray-700
-                         disabled:opacity-50 hover:border-black flex items-center justify-center'>
+              className='h-12 w-12 rounded-xl border-2 border-gray-200 text-xl font-bold cursor-pointer bg-white text-black
+                         disabled:opacity-50 hover:border-gray-300 flex items-center justify-center transition-colors active:bg-gray-100'>
               −
             </button>
-
-            <span className='w-8 text-center text-lg font-semibold text-gray-900'>
+            <span className='w-8 text-center text-lg font-bold text-black'>
               {quantity}
             </span>
-
             <button
               onClick={increaseQty}
               disabled={quantity >= 3}
-              className='h-10 w-10 rounded-lg border text-lg font-bold cursor-pointer bg-white text-gray-700
-                         disabled:opacity-50 hover:border-black flex items-center justify-center'>
+              className='h-12 w-12 rounded-xl border-2 border-gray-200 text-xl font-bold cursor-pointer bg-white text-black
+                         disabled:opacity-50 hover:border-gray-300 flex items-center justify-center transition-colors active:bg-gray-100'>
               +
             </button>
           </div>
         </div>
 
-        {/* ADD TO CART + WISHLIST */}
+        {/* ACTION BUTTONS */}
         <div className="flex gap-4 pt-4">
           <button
             onClick={handleAddToCart}
             disabled={loading}
-            className='flex-1 h-14 rounded-2xl bg-gradient-to-r from-indigo-600 to-blue-600 text-white text-lg font-bold cursor-pointer
-                       hover:from-indigo-700 hover:to-blue-700 disabled:opacity-50 transition-all shadow-md hover:shadow-xl flex items-center justify-center'>
+            className='flex-1 h-14 rounded-xl bg-black text-white text-sm font-bold tracking-widest uppercase cursor-pointer
+                       hover:bg-gray-900 active:scale-95 disabled:opacity-50 transition-all duration-200 flex items-center justify-center'>
             {loading ? "Adding..." : "Add to Cart"}
           </button>
           <button
             onClick={toggleWishlist}
             disabled={wishlistLoading}
             title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
-            className={`h-14 w-14 rounded-2xl border-2 flex items-center justify-center transition cursor-pointer disabled:opacity-50 ${
+            className={`h-14 w-14 rounded-xl border-2 flex items-center justify-center transition-all duration-200 cursor-pointer disabled:opacity-50 shrink-0 hover:scale-105 active:scale-95 ${
               isWishlisted
                 ? "border-red-500 bg-red-50 text-red-500"
-                : "border-gray-200 bg-white text-gray-500 hover:border-red-400 hover:text-red-400"
+                : "border-gray-200 bg-white text-gray-400 hover:border-gray-300 hover:text-gray-600"
             }`}>
-            <Heart className={`h-6 w-6 ${isWishlisted ? "fill-red-500" : ""}`} />
+            <Heart className={`h-6 w-6 transition-colors duration-300 ${isWishlisted ? "fill-red-500 text-red-500" : ""}`} strokeWidth={2.5} />
           </button>
+        </div>
+
+        {/* DESCRIPTION */}
+        <div className="space-y-6 pt-8 border-t border-gray-200">
+          <p className='text-sm text-gray-600 font-medium leading-relaxed'>{product.description}</p>
+          
+          <ul className="space-y-3 text-sm text-gray-600 font-medium list-disc pl-5 marker:text-gray-400">
+            <li>100% Premium Cotton (220 GSM)</li>
+            <li>Oversized, drop-shoulder fit</li>
+            <li>Printed after order (Zero waste)</li>
+          </ul>
+
+          <p className="text-xs text-gray-400 pt-4 border-t border-gray-100">
+            Delivery charges shown before payment. 10-day issue window for print defects.
+          </p>
         </div>
       </div>
     </div>

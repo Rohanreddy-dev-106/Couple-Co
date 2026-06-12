@@ -144,7 +144,7 @@ npm run preview    # Preview production build
 - **Razorpay** for payments
 - **Winston** for logging
 - **node-cron** for scheduled tasks
-- **express-rate-limit** — 10,000 req / 15 min per IP
+- **express-rate-limit** — 100 req / 15 min per IP
 
 ### Folder Structure
 
@@ -319,8 +319,8 @@ Frontend runs at `http://localhost:5173`, proxies API calls to `http://localhost
 | GET | `/products/category/:category` | ✗ | Filter by category |
 | GET | `/products/filter/price?min=&max=` | ✗ | Filter by price range |
 | GET | `/products/total/:category` | ✗ | Product count by category |
-| DELETE | `/admin/user/:userid` | ✓ | Remove user |
-| DELETE | `/admin/:adminid` | ✓ | Remove admin |
+| DELETE | `/admin/user/:userid` | ✓ Admin | Remove user |
+| DELETE | `/admin/:adminid` | ✓ Admin | Remove admin |
 | GET | `/admin/totalrevenue` | ✓ Admin | Total revenue |
 
 ---

@@ -34,4 +34,8 @@ router.get("/admin/all-orders", jwtAuth, AccessControl("admin"), (req, res, next
     cardController.GetAllOrdersAdmin(req, res, next)
 })
 
+router.delete("/admin/delete-order/:id", jwtAuth, AccessControl("admin"), (req, res, next) => {
+    cardController.DeleteOrderAdmin(req, res, next)
+})
+
 export default router;

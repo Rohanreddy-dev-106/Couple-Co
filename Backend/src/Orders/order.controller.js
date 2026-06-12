@@ -131,6 +131,16 @@ export default class Ordercontroller {
                 .json(new ApiError(400, "Failed to fetch orders", error.message));
         }
     }
+
+    async DeleteOrderAdmin(req, res, next) {
+        try {
+            const { id } = req.params;
+            await this._OrdersRepo.deleteOrderAdmin(id);
+            return res.status(200).json(new APIResponse(200, "Order deleted successfully"));
+        } catch (error) {
+            return res.status(400).json(new ApiError(400, "Delete order failed", error.message));
+        }
+    }
 }
 
 
