@@ -33,6 +33,7 @@ export default class Managementrepo {
             return await productmodel.find({});
         } catch (error) {
             console.log(error.message);
+            throw error;
         }
     }
     //public/admin api
@@ -44,6 +45,7 @@ export default class Managementrepo {
             return product.description;
         } catch (error) {
             console.log(error.message);
+            throw error;
         }
     }
     //public/admin
@@ -53,6 +55,7 @@ export default class Managementrepo {
             return products;
         } catch (error) {
             console.log(error.message);
+            throw error;
         }
     }
     //public/admin
@@ -97,22 +100,8 @@ export default class Managementrepo {
    //Per-Admin Revenue (Aggregation)
    //Per-Admin Order Status Breakdown
    //Per-Admin Daily Sale
-    async totalrevenue() {
-        try {
-            const result = await productmodel.aggregate([
-                {
-                    $group: {
-                        _id: null,
-                        total: { $sum: { $multiply: ["$price", "$stock"] } }
-                    }
-                }
-            ]);
-            return result.length > 0 ? result[0].total : 0;
-        } catch (error) {
-            console.log("Error calculating total revenue:", error.message);
-            return 0;
-        }
-    }
+
+
 
     async totalusers() {
         try {

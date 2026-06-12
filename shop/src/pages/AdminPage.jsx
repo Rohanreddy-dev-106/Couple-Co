@@ -7,7 +7,6 @@ import {
   Trash2,
   Package,
   AlertTriangle,
-  IndianRupee,
   ShieldAlert,
   BarChart3,
   Database,
@@ -232,9 +231,7 @@ export default function AdminPage() {
   const totalItems = products.length;
   const outOfStockItems = products.filter((p) => (Number(p.stock) || 0) === 0).length;
   const lowStockItems = products.filter((p) => (Number(p.stock) || 0) > 0 && (Number(p.stock) || 0) <= 10).length;
-  const totalRevenue = products.reduce((acc, p) => {
-    return acc + (Number(p.price) || 0) * (Number(p.stock) || 0);
-  }, 0);
+
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-10">
@@ -320,26 +317,13 @@ export default function AdminPage() {
         </div>
 
         {/* Customer Orders count */}
-        <div className="flex-1 min-w-[160px] sm:min-w-[200px] bg-white rounded-3xl border-2 border-gray-100 p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 hover:-translate-y-1 transition-transform">
-          <div className="p-3 bg-[#fbfbf6] border-2 border-gray-100 rounded-2xl text-black shrink-0">
+        <div className="flex-1 min-w-[200px] sm:min-w-[250px] bg-black rounded-3xl border-2 border-black p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 hover:-translate-y-1 transition-transform">
+          <div className="p-3 bg-[#222] rounded-2xl text-[#cfff04] shrink-0">
             <ShoppingBag className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2.5} />
           </div>
           <div>
             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Orders</p>
-            <h3 className="text-2xl sm:text-3xl font-black text-black mt-1 leading-none">{orders.length}</h3>
-          </div>
-        </div>
-
-        {/* Total Revenue */}
-        <div className="flex-1 min-w-[200px] sm:min-w-[250px] bg-black rounded-3xl border-2 border-black p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 hover:-translate-y-1 transition-transform">
-          <div className="p-3 bg-[#222] rounded-2xl text-[#cfff04] shrink-0">
-            <IndianRupee className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2.5} />
-          </div>
-          <div>
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Revenue</p>
-            <h3 className="text-2xl sm:text-3xl font-black text-white mt-1 leading-none whitespace-nowrap">
-              {totalRevenue.toLocaleString("en-IN")}
-            </h3>
+            <h3 className="text-2xl sm:text-3xl font-black text-white mt-1 leading-none">{orders.length}</h3>
           </div>
         </div>
 

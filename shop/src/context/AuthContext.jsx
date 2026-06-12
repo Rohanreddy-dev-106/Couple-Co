@@ -62,24 +62,32 @@ export function AuthProvider({ children }) {
   }, [user]);
 
   const login = async (email, password) => {
-    // Post to login endpoint
-    const res = await api.post("/user/login", { email, password });
-    if (res.data && res.data.success) {
-      // The login response has user details in data
-      const userData = res.data.data;
-      setUser(userData);
-      return userData;
+    try {
+      // Post to login endpoint
+      const res = await api.post("/user/login", { email, password });
+      if (res.data && res.data.success) {
+        // The login response has user details in data
+        const userData = res.data.data;
+        setUser(userData);
+        return userData;
+      }
+      throw new Error(res.data?.message || "Login failed");
+    } catch (error) {
+      throw new Error(error.response?.data?.message || error.response?.data || error.message || "Login failed");
     }
-    throw new Error(res.data?.message || "Login failed");
   };
 
   const register = async (name, email, password) => {
-    // Post to register endpoint
-    const res = await api.post("/user/register", { name, email, password });
-    if (res.data && res.data.success) {
-      return res.data;
+    try {
+      // Post to register endpoint
+      const res = await api.post("/user/register", { name, email, password });
+      if (res.data && res.data.success) {
+        return res.data;
+      }
+      throw new Error(res.data?.message || "Registration failed");
+    } catch (error) {
+      throw new Error(error.response?.data?.message || error.response?.data || error.message || "Registration failed");
     }
-    throw new Error(res.data?.message || "Registration failed");
   };
 
   const logout = async () => {

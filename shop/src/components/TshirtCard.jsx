@@ -4,9 +4,9 @@ import { ShoppingBag } from "lucide-react";
 export default function TshirtCard({ id, image, name, price, size, stock }) {
   return (
     <Link to={`/product/${id}`} className="block group">
-      <div className="bg-[#f3f2eb] rounded-3xl p-4 sm:p-6 transition-transform duration-300 group-hover:-translate-y-1">
+      <div className="bg-[#fbfbf6] rounded-3xl p-4 sm:p-6 transition-all duration-300 group-hover:-translate-y-2 border-2 border-gray-100 group-hover:border-black group-hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
         {/* Image Container (Simulating the white card from mockups) */}
-        <div className="bg-white rounded-2xl h-64 sm:h-72 w-full flex items-center justify-center mb-6 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl h-64 sm:h-72 w-full flex items-center justify-center mb-6 overflow-hidden border-2 border-gray-100 group-hover:border-gray-200 transition-colors">
           <img
             src={image}
             alt={name}
@@ -34,7 +34,7 @@ export default function TshirtCard({ id, image, name, price, size, stock }) {
           </div>
 
           {/* Bottom row: Stock Indicator */}
-          <div className="w-full py-3 mt-1 bg-[#cfff04] text-black text-[10px] sm:text-xs font-black uppercase tracking-widest rounded-xl text-center shadow-sm">
+          <div className="w-full py-3 mt-1 bg-[#cfff04] text-black text-[10px] sm:text-xs font-black uppercase tracking-widest rounded-xl text-center border-2 border-transparent group-hover:border-[#b0e600] transition-colors">
             In Stock: {stock !== undefined ? stock : 0}
           </div>
         </div>

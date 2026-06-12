@@ -9,7 +9,7 @@ async function Deleteplease(id) {
     }
     catch (error) {
         console.log(error.message);
-
+        throw error;
     }
 
 }

@@ -153,54 +153,49 @@ export default function CartPage() {
           Your Cart
         </h1>
 
-        <div className="space-y-6">
+        <div className="space-y-4">
           {cartItems.filter(item => item.product).map((item) => {
             const prod = item.product || {};
             return (
-              <div key={item._id} className='flex flex-col sm:flex-row gap-6 bg-white border-2 border-gray-100 rounded-3xl p-6 relative hover:-translate-y-1 transition-transform'>
+              <div key={item._id} className='flex items-center gap-4 sm:gap-6 bg-white border-2 border-gray-100 rounded-2xl p-4 sm:p-5 relative hover:-translate-y-0.5 transition-transform group'>
                 {/* Image */}
-                <div className="bg-[#f3f2eb] rounded-2xl p-2 shrink-0 self-center sm:self-start">
-                  <img
-                    src={prod.images || "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500"}
-                    alt={prod.name || "Product"}
-                    className='h-24 w-24 sm:h-32 sm:w-32 rounded-xl object-contain bg-white border-2 border-gray-100'
-                  />
-                </div>
+                <img
+                  src={prod.images || "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500"}
+                  alt={prod.name || "Product"}
+                  className='h-20 w-20 sm:h-24 sm:w-24 rounded-xl object-cover bg-[#f3f2eb] border-2 border-gray-100 shrink-0'
+                />
 
                 {/* Info */}
-                <div className='flex flex-1 flex-col gap-2 justify-center'>
-                  <h2 className='text-xl sm:text-2xl font-black text-black uppercase tracking-tight leading-none'>{prod.name || "T-Shirt"}</h2>
-                  <p className='text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1'>Size: {item.size}</p>
+                <div className='flex-1 min-w-0'>
+                  <h2 className='text-base sm:text-lg font-black text-black uppercase tracking-tight leading-tight truncate'>{prod.name || "T-Shirt"}</h2>
+                  <p className='text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-0.5'>Size: {item.size} · ₹{prod.price || item.price} each</p>
                   
-                  <div className='flex items-center gap-3 mt-4'>
+                  <div className='flex items-center gap-2 mt-3'>
                     <button
                       onClick={() => handleUpdateQuantity(item._id, item.quantity, -1)}
                       disabled={item.quantity <= 1}
-                      className='h-10 w-10 rounded-xl border-2 border-gray-200 text-xl font-black flex items-center justify-center cursor-pointer hover:border-black hover:bg-black hover:text-white transition-colors disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-black disabled:hover:border-gray-200'>
+                      className='h-8 w-8 rounded-lg border-2 border-gray-200 text-sm font-black flex items-center justify-center cursor-pointer hover:border-black hover:bg-black hover:text-white transition-colors disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-black disabled:hover:border-gray-200'>
                       −
                     </button>
-                    <span className='w-8 text-center text-xl font-black text-black'>{item.quantity}</span>
+                    <span className='w-6 text-center text-base font-black text-black'>{item.quantity}</span>
                     <button
                       onClick={() => handleUpdateQuantity(item._id, item.quantity, 1)}
                       disabled={item.quantity >= 3}
-                      className='h-10 w-10 rounded-xl border-2 border-gray-200 text-xl font-black flex items-center justify-center cursor-pointer hover:border-black hover:bg-black hover:text-white transition-colors disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-black disabled:hover:border-gray-200'>
+                      className='h-8 w-8 rounded-lg border-2 border-gray-200 text-sm font-black flex items-center justify-center cursor-pointer hover:border-black hover:bg-black hover:text-white transition-colors disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-black disabled:hover:border-gray-200'>
                       +
                     </button>
                   </div>
                 </div>
 
                 {/* Price & Delete */}
-                <div className='flex sm:flex-col justify-between items-end gap-4 sm:pl-6 pt-6 sm:pt-0 border-t-2 sm:border-t-0 sm:border-l-2 border-gray-100'>
+                <div className='flex flex-col items-end gap-2 shrink-0'>
                   <button
                     onClick={() => handleDeleteItem(item._id)}
-                    className="p-3 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition cursor-pointer border-2 border-transparent hover:border-red-100 active:scale-95"
+                    className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition cursor-pointer opacity-0 group-hover:opacity-100 active:scale-95"
                     title="Remove from Cart">
-                    <Trash2 className="h-6 w-6" strokeWidth={2.5} />
+                    <Trash2 className="h-4 w-4" strokeWidth={2.5} />
                   </button>
-                  <div className='text-right'>
-                    <p className='text-3xl sm:text-4xl font-black text-black leading-none'>₹{(prod.price || item.price) * item.quantity}</p>
-                    <p className='text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-2'>₹{prod.price || item.price} EACH</p>
-                  </div>
+                  <p className='text-2xl sm:text-3xl font-black text-black leading-none'>₹{(prod.price || item.price) * item.quantity}</p>
                 </div>
               </div>
             );

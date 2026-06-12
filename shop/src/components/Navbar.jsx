@@ -1,18 +1,21 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { ShoppingBag, Heart, Shield, LogOut, User } from "lucide-react";
+import { ShoppingBag, Heart, Shield, LogOut, User, Menu, X } from "lucide-react";
 
 export default function Navbar() {
   const { cartCount, wishlistCount, user, logout } = useAuth();
   const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
     navigate("/");
+    setMenuOpen(false);
   };
   
   return (
-    <div className="w-full bg-[#fbfbf6]">
+    <div className="w-full bg-[#fbfbf6] relative z-50">
       {/* Top Promotional Banner */}
       <div className="bg-[#111] text-white text-[10px] sm:text-xs font-bold py-2 px-4 flex flex-col sm:flex-row items-center justify-center gap-2 uppercase tracking-wide">
         <span>Buy 2+ Tees at ₹499 each</span>
@@ -21,24 +24,35 @@ export default function Navbar() {
       </div>
 
       {/* Main Navbar */}
-      <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 border-b border-gray-200/50">
-        {/* Logo */}
-        <Link to="/" className="text-2xl font-black tracking-tight text-black hover:opacity-80 transition-opacity">
-          CoupleChaos
-        </Link>
+      <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 border-b border-gray-200/50">
+        {/* Left: Mobile Hamburger & Logo */}
+        <div className="flex items-center gap-2">
+          <button 
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="flex sm:hidden items-center justify-center w-10 h-10 rounded-xl border-2 border-gray-100 hover:border-gray-300 transition-colors bg-white cursor-pointer"
+          >
+            {menuOpen ? <X className="h-5 w-5 text-black" strokeWidth={2.5} /> : <Menu className="h-5 w-5 text-black" strokeWidth={2.5} />}
+          </button>
+          <Link to="/" className="text-lg sm:text-2xl font-black tracking-tight text-black hover:opacity-80 transition-opacity">
+            CoupleChaos
+          </Link>
+        </div>
 
-        {/* Center Links */}
-        <div className="flex items-center gap-3 sm:gap-8">
+        {/* Center Links (Desktop only) */}
+        <div className="hidden sm:flex items-center gap-4 md:gap-8">
           <Link to="/" className="text-xs sm:text-sm font-bold text-black hover:text-gray-600 transition uppercase tracking-wider">
             Home
           </Link>
           <Link to="/allsheets" className="text-xs sm:text-sm font-bold text-gray-500 hover:text-black transition uppercase tracking-wider">
             Shop
           </Link>
+          <Link to="/contact" className="text-xs sm:text-sm font-bold text-gray-500 hover:text-black transition uppercase tracking-wider">
+            Contact Us
+          </Link>
         </div>
 
         {/* Right Actions */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           {user?.role === "admin" && (
             <Link to="/admin" title="Inventory/Admin" className="flex items-center justify-center w-10 h-10 rounded-xl border-2 border-gray-100 hover:border-gray-300 transition-colors bg-white">
               <Shield className="h-5 w-5 text-black" strokeWidth={2.5} />
@@ -70,7 +84,7 @@ export default function Navbar() {
           </Link>
 
           {user ? (
-            <div className="flex items-center gap-3 ml-2 pl-3 border-l-2 border-gray-100">
+            <div className="flex items-center gap-2 sm:gap-3 ml-1 sm:ml-2 pl-2 sm:pl-3 border-l-2 border-gray-100">
               <Link to="/profile" className="flex items-center gap-2 group">
                 <div className="flex items-center justify-center w-10 h-10 rounded-xl border-2 border-gray-100 group-hover:border-gray-300 transition-colors bg-white">
                   <User className="h-5 w-5 text-black" strokeWidth={2.5} />
@@ -79,17 +93,44 @@ export default function Navbar() {
                   {user.name.split(" ")[0]}
                 </span>
               </Link>
-              <button onClick={handleLogout} title="Logout" className="flex items-center justify-center w-10 h-10 rounded-xl border-2 border-gray-100 hover:border-red-300 hover:bg-red-50 transition-colors bg-white">
+              <button onClick={handleLogout} title="Logout" className="flex items-center justify-center w-10 h-10 rounded-xl border-2 border-gray-100 hover:border-red-300 hover:bg-red-50 transition-colors bg-white cursor-pointer">
                 <LogOut className="h-5 w-5 text-red-500" strokeWidth={2.5} />
               </button>
             </div>
           ) : (
-            <Link to="/login" className="ml-2 bg-black text-white text-xs sm:text-sm font-bold uppercase tracking-wider px-4 py-2.5 rounded-xl hover:bg-gray-800 transition-colors">
+            <Link to="/login" className="ml-1 sm:ml-2 bg-black text-white text-xs sm:text-sm font-bold uppercase tracking-wider px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl hover:bg-gray-800 transition-colors">
               Login
             </Link>
           )}
         </div>
       </nav>
+
+      {/* Mobile Drawer Overlay */}
+      {menuOpen && (
+        <div className="sm:hidden absolute top-20 left-0 w-full bg-[#fbfbf6] border-b-2 border-gray-200 shadow-xl flex flex-col p-6 gap-4 z-40 animate-fade-in-up">
+          <Link 
+            to="/" 
+            onClick={() => setMenuOpen(false)}
+            className="text-lg font-black text-black uppercase tracking-widest py-2 border-b border-gray-100"
+          >
+            Home
+          </Link>
+          <Link 
+            to="/allsheets" 
+            onClick={() => setMenuOpen(false)}
+            className="text-lg font-black text-gray-500 hover:text-black uppercase tracking-widest py-2 border-b border-gray-100"
+          >
+            Shop
+          </Link>
+          <Link 
+            to="/contact" 
+            onClick={() => setMenuOpen(false)}
+            className="text-lg font-black text-gray-500 hover:text-black uppercase tracking-widest py-2"
+          >
+            Contact Us
+          </Link>
+        </div>
+      )}
     </div>
   );
 }

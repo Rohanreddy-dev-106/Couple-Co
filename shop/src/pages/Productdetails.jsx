@@ -136,8 +136,8 @@ export default function ProductPage() {
   return (
     <div className='mx-auto max-w-7xl px-6 py-12 grid lg:grid-cols-2 gap-12 lg:gap-20 bg-[#fbfbf6] min-h-[calc(100vh-80px)]'>
       {/* IMAGE CONTAINER */}
-      <div className='bg-[#f3f2eb] rounded-[40px] p-8 md:p-16 flex items-center justify-center min-h-[500px] animate-fade-in-up opacity-0' style={{ animationDelay: '100ms' }}>
-        <div className="bg-white rounded-[32px] w-full max-w-md aspect-[4/5] shadow-sm flex items-center justify-center overflow-hidden">
+      <div className='bg-white border-2 border-gray-100 rounded-[40px] p-8 md:p-16 flex items-center justify-center min-h-[500px] animate-fade-in-up opacity-0 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all' style={{ animationDelay: '100ms' }}>
+        <div className="bg-[#fbfbf6] rounded-[32px] w-full max-w-md aspect-[4/5] flex items-center justify-center overflow-hidden border-2 border-gray-100">
           <img
             src={product.image}
             alt={product.title}
@@ -213,8 +213,8 @@ export default function ProductPage() {
           <button
             onClick={handleAddToCart}
             disabled={loading}
-            className='flex-1 h-14 rounded-xl bg-black text-white text-sm font-bold tracking-widest uppercase cursor-pointer
-                       hover:bg-gray-900 active:scale-95 disabled:opacity-50 transition-all duration-200 flex items-center justify-center'>
+            className='flex-1 h-14 rounded-xl bg-black text-white text-sm font-black tracking-widest uppercase cursor-pointer
+                       hover:bg-gray-800 hover:-translate-y-1 active:translate-y-0 active:scale-95 disabled:opacity-50 transition-all duration-200 flex items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.12)]'>
             {loading ? "Adding..." : "Add to Cart"}
           </button>
           <button

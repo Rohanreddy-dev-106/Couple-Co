@@ -19,7 +19,7 @@ userRouts.put("/profile-update", jwtAuth, (req, res, next) => {
     userControler.Profileupdate(req, res, next);
 })
 
-userRouts.post("/refresh-Token", jwtAuth, (req, res, next) => {
+userRouts.post("/refresh-Token", (req, res, next) => {
     userControler.CreatenewRefreshTokenAndAccessToken(req, res, next);
 })
 userRouts.get("/get-profile", jwtAuth, (req, res, next) => {

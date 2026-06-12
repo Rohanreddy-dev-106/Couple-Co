@@ -157,20 +157,42 @@ export default function AllTshirts() {
       
       {/* ── HERO SECTION (Only show on default view) ── */}
       {(activeFilter === "all" && location.pathname === "/") && (
-        <div className="mx-auto max-w-7xl mb-16 mt-4">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-12">
+        <div className="mx-auto max-w-7xl mb-16 mt-4 relative">
+          
+          {/* Grid pattern background container */}
+          <div className="absolute inset-0 -mx-4 sm:-mx-6 -mt-10 rounded-3xl overflow-hidden" style={{ top: '-2rem', bottom: '-2rem', left: '-2rem', right: '-2rem' }}>
+            <div className="absolute inset-0 hero-gradient-shimmer"></div>
+            <div className="absolute inset-0 hero-grid-bg"></div>
+            <div className="absolute inset-0 hero-dots-bg opacity-40"></div>
+            {/* Fade edges */}
+            <div className="absolute inset-0 bg-gradient-to-b from-[#fbfbf6] via-transparent to-[#fbfbf6] opacity-40"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-[#fbfbf6] via-transparent to-[#fbfbf6] opacity-30"></div>
+          </div>
+
+          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-12">
             
             {/* Left side: Text */}
-            <div className="flex-1 max-w-2xl animate-fade-in-up opacity-0">
+            <div className="flex-1 max-w-2xl" style={{ perspective: '800px' }}>
               <h1 className="text-6xl md:text-8xl font-black text-black leading-[0.9] tracking-tighter mb-6">
-                Wear the joke <br /> first.
+                {["Wear", "the", "joke"].map((word, i) => (
+                  <span key={word} className="animate-hero-word inline-block mr-[0.25em]" style={{ animationDelay: `${i * 150}ms` }}>
+                    {word}
+                  </span>
+                ))}
+                <br />
+                {["first."].map((word, i) => (
+                  <span key={word} className="animate-hero-word inline-block" style={{ animationDelay: `${450 + i * 150}ms` }}>
+                    {word}
+                  </span>
+                ))}
               </h1>
-              <p className="text-lg md:text-xl text-black font-medium mb-8 max-w-md">
+              <p className="text-lg md:text-xl text-black font-medium mb-8 max-w-md animate-hero-subtitle" style={{ animationDelay: '700ms' }}>
                 Oversized tees for campus chaos, office survival, gym excuses, and software bugs.
               </p>
               <button 
                 onClick={() => window.scrollTo({ top: 800, behavior: 'smooth' })}
-                className="bg-black text-white px-8 py-4 rounded-full font-black text-sm tracking-widest hover:bg-gray-900 transition-colors cursor-pointer inline-flex items-center hover:scale-105 active:scale-95 duration-200"
+                className="bg-black text-white px-8 py-4 rounded-full font-black text-sm tracking-widest hover:bg-gray-900 transition-colors cursor-pointer inline-flex items-center hover:scale-105 active:scale-95 duration-200 animate-hero-cta"
+                style={{ animationDelay: '900ms' }}
               >
                 SHOP ₹599 TEES
               </button>
@@ -193,7 +215,7 @@ export default function AllTshirts() {
           </div>
 
           {/* Categories / Tags below Hero */}
-          <div className="flex flex-wrap gap-3 mt-12 animate-fade-in opacity-0" style={{ animationDelay: '400ms' }}>
+          <div className="relative z-10 flex flex-wrap gap-3 mt-12 animate-fade-in opacity-0" style={{ animationDelay: '400ms' }}>
             {["Funny", "Relatable", "College", "Office", "Software", "Gym"].map((tag, i) => (
               <span key={tag} className="bg-white px-5 py-2.5 rounded-full text-sm font-bold border border-gray-200 text-black hover:bg-black hover:text-white transition-colors cursor-pointer animate-pop-in opacity-0" style={{ animationDelay: `${500 + i * 100}ms` }}>
                 {tag}

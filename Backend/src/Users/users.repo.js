@@ -36,6 +36,7 @@ export default class Userrepo {
             return user;
         } catch (error) {
             console.log(error.message);
+            throw error;
         }
     }
 
@@ -49,6 +50,7 @@ export default class Userrepo {
             return user;
         } catch (error) {
             console.log(error.message);
+            throw error;
         }
     }
 
@@ -114,6 +116,7 @@ export default class Userrepo {
             return docfind?.refreshToken; // safe optional chaining
         } catch (error) {
             console.log(error.message);
+            throw error;
         }
     }
 
@@ -122,6 +125,7 @@ export default class Userrepo {
             return await Usermodel.findById(id);
         } catch (err) {
             console.log(err.message);
+            throw err;
         }
     }
 
@@ -133,6 +137,7 @@ export default class Userrepo {
             );
         } catch (err) {
             console.log(err.message);
+            throw err;
         }
     }
 
@@ -141,6 +146,7 @@ export default class Userrepo {
             return await profilemodel.findOne({user:UserID});
         } catch (err) {
             console.log(err.message);
+            throw err;
         }
     }
 }

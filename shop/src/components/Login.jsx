@@ -66,7 +66,7 @@ export default function Login() {
             />
           </div>
 
-          <button type="submit" className='w-full h-14 mt-4 text-sm font-black tracking-widest uppercase bg-black text-white hover:bg-gray-800 transition-colors rounded-xl flex items-center justify-center disabled:opacity-50' disabled={loading}>
+          <button type="submit" className='w-full h-14 mt-4 text-sm font-black tracking-widest uppercase bg-black text-white hover:bg-gray-800 hover:-translate-y-1 active:translate-y-0 active:scale-95 shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-200 rounded-xl flex items-center justify-center disabled:opacity-50 cursor-pointer' disabled={loading}>
             {loading ? "Logging in..." : "Login to Account"}
           </button>
 

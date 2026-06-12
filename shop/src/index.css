@@ -179,4 +179,72 @@
     from { opacity: 0; transform: translateX(40px); }
     to { opacity: 1; transform: translateX(0); }
   }
+
+  /* Hero text reveal: each word slides up with a stagger */
+  @keyframes heroWordReveal {
+    0% { opacity: 0; transform: translateY(100%) rotateX(-80deg); filter: blur(6px); }
+    60% { opacity: 1; filter: blur(0px); }
+    100% { opacity: 1; transform: translateY(0) rotateX(0deg); filter: blur(0px); }
+  }
+  .animate-hero-word {
+    display: inline-block;
+    opacity: 0;
+    animation: heroWordReveal 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  /* Hero subtitle slide in */
+  @keyframes heroSubtitle {
+    from { opacity: 0; transform: translateY(20px); filter: blur(4px); }
+    to { opacity: 1; transform: translateY(0); filter: blur(0); }
+  }
+  .animate-hero-subtitle {
+    opacity: 0;
+    animation: heroSubtitle 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  /* Hero CTA button bounce-in */
+  @keyframes heroCta {
+    0% { opacity: 0; transform: scale(0.8) translateY(10px); }
+    70% { transform: scale(1.05) translateY(0); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .animate-hero-cta {
+    opacity: 0;
+    animation: heroCta 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  /* Grid pattern background for hero */
+  .hero-grid-bg {
+    background-image:
+      linear-gradient(rgba(0, 0, 0, 0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 0, 0, 0.08) 1px, transparent 1px);
+    background-size: 40px 40px;
+    background-position: center center;
+  }
+
+  /* Gradient dots overlay */
+  .hero-dots-bg {
+    background-image: radial-gradient(circle, rgba(0,0,0,0.12) 1.2px, transparent 1.2px);
+    background-size: 24px 24px;
+  }
+
+  /* Animated gradient shimmer that moves diagonally */
+  @keyframes gradientShimmer {
+    0% { background-position: 0% 0%; }
+    50% { background-position: 100% 100%; }
+    100% { background-position: 0% 0%; }
+  }
+  .hero-gradient-shimmer {
+    background: linear-gradient(
+      135deg,
+      #fbfbf6 0%,
+      #f3f0e3 20%,
+      #fbfbf6 40%,
+      #eef2e0 60%,
+      #fbfbf6 80%,
+      #f0ede0 100%
+    );
+    background-size: 400% 400%;
+    animation: gradientShimmer 12s ease-in-out infinite;
+  }
 }

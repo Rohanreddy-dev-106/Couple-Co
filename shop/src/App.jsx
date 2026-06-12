@@ -8,6 +8,7 @@ import CartPage from "./pages/Cards.jsx";
 import AdminPage from "./pages/AdminPage.jsx";
 import WishlistPage from "./pages/WishlistPage.jsx";
 import ProfilePage from "./pages/ProfilePage.jsx";
+import ContactPage from "./pages/ContactPage.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/wishlist" element={<WishlistPage />} />
+            <Route path="/contact" element={<ContactPage />} />
           </Routes>
           
           {/* Minimal Black Footer */}

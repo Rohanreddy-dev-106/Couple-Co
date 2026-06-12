@@ -19,9 +19,13 @@ export default class Productcontroller {
                 .status(200)
                 .json(new APIResponse(200, "product created...", result));
         } catch (error) {
+            let errorMessage = error.message || "product creation Failed";
+            if (error.code === 11000) {
+                errorMessage = "A product with this name already exists. Please choose a different name.";
+            }
             return res
                 .status(404)
-                .json(new ApiError(404, "product creation Failed", error.message));
+                .json(new ApiError(404, errorMessage, error.message));
         }
     }
 

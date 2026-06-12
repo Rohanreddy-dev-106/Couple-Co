@@ -45,15 +45,8 @@ export default class Managementcontroller {
         }
     }
     
-    // Get total revenue
-    async totalrevenue(req, res) {
-        try {
-            const revenue = await this._managementrepository.totalrevenue();
-            return res.status(200).json(new APIResponse(200, "Total revenue fetched", { totalRevenue: revenue }));
-        } catch (error) {
-            return res.status(500).json(new ApiError(500, "Fetch failed", error.message));
-        }
-    }
+
+
 
     // Get total users
     async totalusers(req, res) {

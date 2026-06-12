@@ -4,7 +4,7 @@ export default function jwtAuth(req, res, next) {
     const token = req.cookies.jwtToken;
 
     if (!token) {
-        return res.status(401).send("Invalid credentials");
+        return res.status(401).json({ message: "Invalid credentials", success: false });
     }
 
     try {
@@ -19,6 +19,6 @@ export default function jwtAuth(req, res, next) {
 
         next();
     } catch (error) {
-        return res.status(401).send("Invalid credentials");
+        return res.status(401).json({ message: "Invalid credentials", success: false });
     }
 }

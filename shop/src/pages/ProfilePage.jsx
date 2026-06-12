@@ -111,25 +111,25 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-6 py-12">
-      <div className="rounded-3xl border border-gray-200 bg-white p-8 shadow-xs">
+    <div className="mx-auto max-w-2xl px-4 sm:px-6 py-12 bg-[#fbfbf6] min-h-[calc(100vh-80px)] flex flex-col items-center justify-center">
+      <div className="w-full rounded-3xl border-2 border-gray-100 bg-white p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] animate-fade-in-up">
         
         {/* Header */}
-        <div className="flex items-center gap-4 border-b pb-6 mb-8">
-          <div className="h-14 w-14 rounded-2xl bg-black text-white flex items-center justify-center text-xl font-bold">
+        <div className="flex items-center gap-4 border-b-2 border-gray-100 pb-6 mb-8">
+          <div className="h-14 w-14 rounded-2xl bg-black text-white flex items-center justify-center text-xl font-black">
             {user.name ? user.name[0].toUpperCase() : "U"}
           </div>
           <div>
-            <h1 className="text-2xl font-extrabold text-gray-900">{user.name}</h1>
-            <p className="text-gray-500 text-sm">{user.email}</p>
+            <h1 className="text-2xl font-black text-black uppercase tracking-tight">{user.name}</h1>
+            <p className="text-gray-500 font-bold text-sm tracking-widest uppercase">{user.email}</p>
           </div>
         </div>
 
-        <h2 className="text-lg font-bold text-gray-950 mb-1.5 flex items-center gap-2">
-          <MapPin className="h-5 w-5 text-gray-700" />
+        <h2 className="text-lg font-black text-black uppercase tracking-widest mb-1.5 flex items-center gap-2">
+          <MapPin className="h-5 w-5 text-black" strokeWidth={2.5} />
           Delivery Address
         </h2>
-        <p className="text-xs text-gray-500 mb-6">Manage your primary shipping details for fast checkout placement.</p>
+        <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-gray-500 mb-6">Manage your primary shipping details for fast checkout placement.</p>
 
         {message.text && (
           <div
@@ -157,7 +157,7 @@ export default function ProfilePage() {
                   value={formData.fullName}
                   onChange={handleInputChange}
                   placeholder="Receiver's name"
-                  className="w-full rounded-xl border border-gray-300 pl-10 pr-4 py-2.5 text-xs focus:border-black outline-none transition"
+                  className="w-full rounded-xl border-2 border-gray-100 pl-10 pr-4 py-2.5 text-xs font-bold text-black focus:border-black outline-none transition bg-[#fbfbf6] focus:bg-white"
                 />
                 <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
               </div>
@@ -174,7 +174,7 @@ export default function ProfilePage() {
                   value={formData.phone}
                   onChange={handleInputChange}
                   placeholder="10-digit mobile number"
-                  className="w-full rounded-xl border border-gray-300 pl-10 pr-4 py-2.5 text-xs focus:border-black outline-none transition"
+                  className="w-full rounded-xl border-2 border-gray-100 pl-10 pr-4 py-2.5 text-xs font-bold text-black focus:border-black outline-none transition bg-[#fbfbf6] focus:bg-white"
                 />
                 <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
               </div>
@@ -192,7 +192,7 @@ export default function ProfilePage() {
               value={formData.addressLine1}
               onChange={handleInputChange}
               placeholder="Address Line 1"
-              className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-xs focus:border-black outline-none transition"
+              className="w-full rounded-xl border-2 border-gray-100 px-4 py-2.5 text-xs font-bold text-black focus:border-black outline-none transition bg-[#fbfbf6] focus:bg-white"
             />
           </div>
 
@@ -206,7 +206,7 @@ export default function ProfilePage() {
               value={formData.addressLine2}
               onChange={handleInputChange}
               placeholder="Address Line 2 (Optional)"
-              className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-xs focus:border-black outline-none transition"
+              className="w-full rounded-xl border-2 border-gray-100 px-4 py-2.5 text-xs font-bold text-black focus:border-black outline-none transition bg-[#fbfbf6] focus:bg-white"
             />
           </div>
 
@@ -221,7 +221,7 @@ export default function ProfilePage() {
                 required
                 value={formData.city}
                 onChange={handleInputChange}
-                className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-xs focus:border-black outline-none transition"
+                className="w-full rounded-xl border-2 border-gray-100 px-4 py-2.5 text-xs font-bold text-black focus:border-black outline-none transition bg-[#fbfbf6] focus:bg-white"
               />
             </div>
 
@@ -234,7 +234,7 @@ export default function ProfilePage() {
                 required
                 value={formData.state}
                 onChange={handleInputChange}
-                className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-xs focus:border-black outline-none transition"
+                className="w-full rounded-xl border-2 border-gray-100 px-4 py-2.5 text-xs font-bold text-black focus:border-black outline-none transition bg-[#fbfbf6] focus:bg-white"
               />
             </div>
 
@@ -247,7 +247,7 @@ export default function ProfilePage() {
                 required
                 value={formData.postalCode}
                 onChange={handleInputChange}
-                className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-xs focus:border-black outline-none transition"
+                className="w-full rounded-xl border-2 border-gray-100 px-4 py-2.5 text-xs font-bold text-black focus:border-black outline-none transition bg-[#fbfbf6] focus:bg-white"
               />
             </div>
           </div>
@@ -264,7 +264,7 @@ export default function ProfilePage() {
                   value={formData.landmark}
                   onChange={handleInputChange}
                   placeholder="e.g. Near Apollo Hospital"
-                  className="w-full rounded-xl border border-gray-300 pl-10 pr-4 py-2.5 text-xs focus:border-black outline-none transition"
+                  className="w-full rounded-xl border-2 border-gray-100 pl-10 pr-4 py-2.5 text-xs font-bold text-black focus:border-black outline-none transition bg-[#fbfbf6] focus:bg-white"
                 />
                 <Building className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
               </div>
@@ -280,7 +280,7 @@ export default function ProfilePage() {
                   required
                   value={formData.country}
                   onChange={handleInputChange}
-                  className="w-full rounded-xl border border-gray-300 pl-10 pr-4 py-2.5 text-xs focus:border-black outline-none transition"
+                  className="w-full rounded-xl border-2 border-gray-100 pl-10 pr-4 py-2.5 text-xs font-bold text-black focus:border-black outline-none transition bg-[#fbfbf6] focus:bg-white"
                 />
                 <Flag className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
               </div>
@@ -310,7 +310,7 @@ export default function ProfilePage() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full h-12 mt-4 rounded-xl bg-black text-sm font-bold text-white hover:bg-gray-800 disabled:opacity-50 transition cursor-pointer flex items-center justify-center shadow-sm">
+            className="w-full h-14 mt-8 rounded-xl bg-black text-sm font-black tracking-widest uppercase text-white hover:bg-gray-800 hover:-translate-y-1 active:translate-y-0 active:scale-95 shadow-[0_8px_30px_rgb(0,0,0,0.12)] disabled:opacity-50 transition-all duration-200 cursor-pointer flex items-center justify-center">
             {submitting ? "Saving details..." : "Save Delivery Profile"}
           </button>
         </form>
@@ -319,24 +319,21 @@ export default function ProfilePage() {
 
       {/* ── Saved Address Preview ── */}
       {savedProfile && (
-        <div className="mt-6 rounded-2xl border border-emerald-100 bg-emerald-50/60 p-6 max-w-2xl mx-auto">
-          <div className="flex items-center gap-2 mb-3">
-            <CheckCircle className="h-5 w-5 text-emerald-600" />
-            <h3 className="font-bold text-emerald-800 text-sm">Active Shipping Address</h3>
-            <span className="ml-auto text-xs bg-emerald-100 text-emerald-700 font-semibold px-2.5 py-0.5 rounded-full capitalize">{savedProfile.addressType}</span>
+        <div className="mt-8 w-full rounded-3xl border-2 border-[#b5e000] bg-[#cfff04]/10 p-6 sm:p-8 animate-fade-in-up" style={{ animationDelay: '200ms' }}>
+          <div className="flex items-center gap-2 mb-4">
+            <CheckCircle className="h-5 w-5 text-[#8eb000]" strokeWidth={2.5} />
+            <h3 className="font-black text-black uppercase tracking-widest text-sm">Active Shipping Address</h3>
+            <span className="ml-auto text-[10px] bg-black text-[#cfff04] font-black px-3 py-1 rounded-md uppercase tracking-widest">{savedProfile.addressType}</span>
           </div>
-          <div className="text-sm text-gray-700 space-y-0.5 leading-relaxed">
-            <p className="font-bold text-gray-900">{savedProfile.fullName}</p>
+          <div className="text-sm font-bold text-gray-800 space-y-1 leading-relaxed">
+            <p className="font-black text-black text-base">{savedProfile.fullName}</p>
             <p>{savedProfile.addressLine1}</p>
             {savedProfile.addressLine2 && <p>{savedProfile.addressLine2}</p>}
-            {savedProfile.landmark && <p className="text-gray-500">Near: {savedProfile.landmark}</p>}
+            {savedProfile.landmark && <p className="text-gray-500 uppercase tracking-widest text-[10px]">Near: {savedProfile.landmark}</p>}
             <p>{savedProfile.city}, {savedProfile.state} — {savedProfile.postalCode}</p>
             <p>{savedProfile.country}</p>
-            <p className="font-semibold mt-1">📞 {savedProfile.phone}</p>
+            <p className="font-black mt-2 bg-white inline-block px-3 py-1 rounded-lg border-2 border-gray-100">📞 {savedProfile.phone}</p>
           </div>
-          <p className="mt-4 text-xs text-emerald-700 font-medium">
-            ✅ This address will appear on your orders and in the admin panel.
-          </p>
         </div>
       )}
 

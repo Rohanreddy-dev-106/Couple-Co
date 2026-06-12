@@ -76,97 +76,98 @@ export default function WishlistPage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-6 py-12">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900 flex items-center gap-3">
-          <Heart className="h-8 w-8 fill-red-500 text-red-500" />
-          My Wishlist
-        </h1>
-        {items.length > 0 && (
-          <button
-            onClick={handleClearAll}
-            className="text-sm font-semibold text-red-500 hover:text-red-700 transition cursor-pointer flex items-center gap-1.5">
-            <Trash2 className="h-4 w-4" />
-            Clear All
-          </button>
+    <div className="min-h-screen bg-[#fbfbf6] pt-12 pb-24 px-6 sm:px-12">
+      <div className="mx-auto max-w-5xl">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-10">
+          <div>
+            <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-black uppercase flex items-center gap-3">
+              <Heart className="h-8 w-8 sm:h-10 sm:w-10 fill-red-500 text-red-500" />
+              Wishlist
+            </h1>
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-2">{items.length} {items.length === 1 ? 'item' : 'items'} saved</p>
+          </div>
+          {items.length > 0 && (
+            <button
+              onClick={handleClearAll}
+              className="text-xs font-black text-red-500 hover:text-white hover:bg-red-500 transition-colors cursor-pointer flex items-center gap-1.5 uppercase tracking-widest px-4 py-2.5 rounded-xl border-2 border-red-200 hover:border-red-500">
+              <Trash2 className="h-3.5 w-3.5" strokeWidth={3} />
+              Clear All
+            </button>
+          )}
+        </div>
+
+        {error && (
+          <div className="mb-8 rounded-2xl bg-red-50 border-2 border-red-100 p-5 text-sm font-bold text-red-600">
+            {error}
+          </div>
         )}
-      </div>
 
-      {error && (
-        <div className="mb-6 rounded-xl bg-red-50 border border-red-100 p-4 text-sm font-medium text-red-600">
-          {error}
-        </div>
-      )}
-
-      {items.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-24 gap-4 text-center">
-          <Heart className="h-14 w-14 text-gray-200" />
-          <p className="text-gray-500 font-medium text-lg">Your wishlist is empty.</p>
-          <p className="text-gray-400 text-sm">Browse and heart the products you love!</p>
-          <button
-            onClick={() => navigate("/")}
-            className="mt-2 rounded-xl bg-black px-6 py-3 text-sm font-bold text-white hover:bg-gray-800 transition cursor-pointer">
-            Shop Now
-          </button>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {items.map((product) => (
-            <div
-              key={product._id}
-              className="group bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-all">
-              {/* Image */}
-              <Link to={`/product/${product._id}`} className="block">
-                <div className="relative h-52 w-full overflow-hidden bg-gray-50">
-                  <img
-                    src={product.images || "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500"}
-                    alt={product.name}
-                    className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  {product.stock === 0 && (
-                    <span className="absolute top-3 left-3 bg-gray-900 text-white text-[11px] font-bold px-2.5 py-1 rounded-full">
-                      Out of Stock
-                    </span>
-                  )}
-                </div>
-              </Link>
-
-              {/* Details */}
-              <div className="p-5">
-                <Link to={`/product/${product._id}`}>
-                  <h2 className="font-bold text-gray-900 text-base leading-tight hover:underline">
-                    {product.name}
-                  </h2>
+        {items.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-24 gap-4 text-center bg-white rounded-3xl border-2 border-gray-100">
+            <Heart className="h-14 w-14 text-gray-200" />
+            <p className="text-black font-black text-xl uppercase">Your wishlist is empty</p>
+            <p className="text-gray-400 font-medium text-sm">Browse and heart the products you love!</p>
+            <button
+              onClick={() => navigate("/")}
+              className="mt-2 rounded-xl bg-black px-8 py-4 text-xs font-black uppercase tracking-widest text-white hover:bg-gray-800 transition cursor-pointer hover:-translate-y-1 active:translate-y-0">
+              Shop Now
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {items.map((product) => (
+              <div
+                key={product._id}
+                className="group bg-white border-2 border-gray-100 rounded-2xl overflow-hidden hover:-translate-y-1 transition-all duration-200">
+                {/* Image */}
+                <Link to={`/product/${product._id}`} className="block">
+                  <div className="relative h-48 w-full overflow-hidden bg-[#f3f2eb] flex items-center justify-center p-4">
+                    <img
+                      src={product.images || "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500"}
+                      alt={product.name}
+                      className="h-full w-full object-contain group-hover:scale-110 transition-transform duration-300"
+                    />
+                    {product.stock === 0 && (
+                      <span className="absolute top-3 left-3 bg-black text-white text-[10px] font-black px-3 py-1.5 rounded-lg uppercase tracking-widest">
+                        Sold Out
+                      </span>
+                    )}
+                    {/* Remove button overlay */}
+                    <button
+                      onClick={(e) => { e.preventDefault(); handleRemove(product._id); }}
+                      title="Remove from wishlist"
+                      className="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-sm text-red-500 hover:bg-red-500 hover:text-white rounded-xl transition-all cursor-pointer opacity-100 sm:opacity-0 group-hover:opacity-100 active:scale-90 border-2 border-transparent hover:border-red-600">
+                      <Heart className="h-4 w-4 fill-current" />
+                    </button>
+                  </div>
                 </Link>
-                <p className="text-xs text-gray-400 mt-0.5">{product.category}</p>
 
-                <div className="mt-4 flex items-center justify-between">
-                  <span className="text-xl font-extrabold text-gray-900">₹{product.price}</span>
+                {/* Details */}
+                <div className="p-4">
+                  <Link to={`/product/${product._id}`}>
+                    <h2 className="font-black text-black text-sm uppercase tracking-tight leading-tight hover:text-gray-600 transition-colors truncate">
+                      {product.name}
+                    </h2>
+                  </Link>
+                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">{product.category}</p>
 
-                  <div className="flex items-center gap-2">
-                    {/* Go to product */}
+                  <div className="mt-3 flex items-center justify-between">
+                    <span className="text-2xl font-black text-black leading-none">₹{product.price}</span>
+
                     <Link
                       to={`/product/${product._id}`}
-                      className="flex items-center gap-1.5 text-xs font-bold bg-black text-white px-3 py-2 rounded-lg hover:bg-gray-800 transition">
-                      <ShoppingCart className="h-3.5 w-3.5" />
-                      Add to Cart
+                      className="flex items-center gap-1.5 text-[10px] font-black bg-black text-white px-4 py-2.5 rounded-xl hover:bg-gray-800 transition-colors uppercase tracking-widest hover:-translate-y-0.5 active:translate-y-0">
+                      <ShoppingCart className="h-3.5 w-3.5" strokeWidth={3} />
+                      View
                     </Link>
-
-                    {/* Remove from wishlist */}
-                    <button
-                      onClick={() => handleRemove(product._id)}
-                      title="Remove from wishlist"
-                      className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition cursor-pointer">
-                      <Heart className="h-4.5 w-4.5 fill-red-400" />
-                    </button>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

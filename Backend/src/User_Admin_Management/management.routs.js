@@ -40,9 +40,7 @@ managementRouter.delete("/admin/:adminid", jwtAuth, AccessControl("admin"), (req
     management.removeadmin(req, res, next)
 );
 
-managementRouter.get("/admin/totalrevenue", jwtAuth, AccessControl("admin"), (req, res, next) =>
-    management.totalrevenue(req, res, next)
-);
+
 
 managementRouter.get("/admin/totalusers", jwtAuth, AccessControl("admin"), (req, res, next) =>
     management.totalusers(req, res, next)
