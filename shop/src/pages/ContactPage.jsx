@@ -1,4 +1,5 @@
 import React from "react";
+import SEO from "../components/SEO.jsx";
 import { Mail, Phone, Camera, Briefcase, MapPin, ArrowUpRight } from "lucide-react";
 
 export default function ContactPage() {
@@ -38,7 +39,13 @@ export default function ContactPage() {
   ];
 
   return (
-    <div className="min-h-[calc(100vh-80px)] bg-[#fbfbf6] px-4 py-12 flex items-center justify-center relative overflow-hidden">
+    <>
+      <SEO 
+        title="Contact Us" 
+        description="Get in touch with Couple Chaos. Reach out via email, phone, or Instagram for support and inquiries."
+        keywords="contact couple chaos, customer support, couple chaos email" 
+      />
+      <div className="min-h-[calc(100vh-80px)] bg-[#fbfbf6] px-4 py-12 flex items-center justify-center relative overflow-hidden">
       
       {/* Grid pattern background layer */}
       <div className="absolute inset-0 pointer-events-none">
@@ -95,6 +102,7 @@ export default function ContactPage() {
         </div>
 
       </div>
-    </div>
+      </div>
+    </>
   );
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import api from "../lib/api";
+import SEO from "../components/SEO.jsx";
 import { User, Phone, MapPin, Building, Flag, CheckCircle } from "lucide-react";
 
 export default function ProfilePage() {
@@ -111,13 +112,17 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-4 sm:px-6 py-12 bg-[#fbfbf6] min-h-[calc(100vh-80px)] flex flex-col items-center justify-center">
-      <div className="w-full rounded-3xl border-2 border-gray-100 bg-white p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] animate-fade-in-up">
-        
-        {/* Header */}
-        <div className="flex items-center gap-4 border-b-2 border-gray-100 pb-6 mb-8">
-          <div className="h-14 w-14 rounded-2xl bg-black text-white flex items-center justify-center text-xl font-black">
-            {user.name ? user.name[0].toUpperCase() : "U"}
+    <>
+      <SEO 
+        title="My Profile" 
+        description="Manage your account, view your profile details, and track your orders at Couple Chaos."
+      />
+      <div className="mx-auto max-w-2xl px-4 sm:px-6 py-12 bg-[#fbfbf6] min-h-[calc(100vh-80px)] flex flex-col items-center justify-center">
+        <div className="w-full rounded-3xl border-2 border-gray-100 bg-white p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] animate-fade-in-up">
+          
+          {/* Header */}
+          <div className="flex items-center gap-4 border-b-2 border-gray-100 pb-6 mb-8">
+            <div className="h-14 w-14 rounded-2xl bg-black text-white flex items-center justify-center text-xl font-black">
           </div>
           <div>
             <h1 className="text-2xl font-black text-black uppercase tracking-tight">{user.name}</h1>
@@ -337,6 +342,7 @@ export default function ProfilePage() {
         </div>
       )}
 
-    </div>
+      </div>
+    </>
   );
 }

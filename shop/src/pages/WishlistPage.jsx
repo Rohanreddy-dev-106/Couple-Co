@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import api from "../lib/api";
 import { useAuth } from "../context/AuthContext";
 import { Heart, Trash2, ShoppingCart } from "lucide-react";
+import SEO from "../components/SEO.jsx";
 
 export default function WishlistPage() {
   const { user } = useAuth();
@@ -76,14 +77,18 @@ export default function WishlistPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fbfbf6] pt-12 pb-24 px-6 sm:px-12">
-      <div className="mx-auto max-w-5xl">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-10">
-          <div>
-            <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-black uppercase flex items-center gap-3">
-              <Heart className="h-8 w-8 sm:h-10 sm:w-10 fill-red-500 text-red-500" />
-              Wishlist
+    <>
+      <SEO 
+        title="Your Wishlist" 
+        description="View your saved items and favorite graphic tees at Couple Chaos."
+      />
+      <div className="min-h-[calc(100vh-80px)] bg-[#fbfbf6] px-4 sm:px-6 py-10">
+        <div className="mx-auto max-w-5xl">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-10">
+            <div>
+              <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-black uppercase flex items-center gap-3">
+                <Heart className="h-8 w-8 sm:h-10 sm:w-10 fill-red-500 text-red-500" />
             </h1>
             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-2">{items.length} {items.length === 1 ? 'item' : 'items'} saved</p>
           </div>
@@ -168,6 +173,7 @@ export default function WishlistPage() {
           </div>
         )}
       </div>
-    </div>
+      </div>
+    </>
   );
 }

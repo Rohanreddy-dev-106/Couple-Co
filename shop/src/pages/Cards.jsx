@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../lib/api";
 import { Trash2 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import SEO from "../components/SEO.jsx";
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState([]);
@@ -179,16 +180,20 @@ export default function CartPage() {
   }
 
   return (
-    <div className='min-h-screen bg-[#fbfbf6] pt-24 pb-24 px-6 sm:px-12 font-sans'>
-      <div className='mx-auto max-w-4xl'>
-        <h1 className='mb-12 text-5xl sm:text-6xl font-black text-black uppercase tracking-tight'>
-          Your Cart
-        </h1>
-
-        <div className="space-y-4">
-          {cartItems.filter(item => item.product).map((item) => {
-            const prod = item.product || {};
-            return (
+    <>
+      <SEO 
+        title="Your Cart" 
+        description="Review your selected items and checkout securely at Couple Chaos."
+      />
+      <div className='min-h-[calc(100vh-80px)] bg-[#fbfbf6] px-4 py-8'>
+        <div className='mx-auto max-w-4xl'>
+          <h1 className='mb-12 text-5xl sm:text-6xl font-black text-black uppercase tracking-tight'>
+            Your Cart
+          </h1>
+          <div className="space-y-4">
+            {cartItems.filter(item => item.product).map((item) => {
+              const prod = item.product || {};
+              return (
               <div key={item._id} className='flex items-center gap-4 sm:gap-6 bg-white border-2 border-gray-100 rounded-2xl p-4 sm:p-5 relative hover:-translate-y-0.5 transition-transform group'>
                 {/* Image */}
                 <img
@@ -269,6 +274,7 @@ export default function CartPage() {
           </button>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

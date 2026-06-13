@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import TshirtCard from "../components/TshirtCard.jsx";
+import SEO from "../components/SEO.jsx";
 import api from "../lib/api";
 import { Search, SlidersHorizontal, RotateCcw, Tag, IndianRupee, X } from "lucide-react";
 
@@ -153,7 +154,13 @@ export default function AllTshirts() {
   }[activeFilter];
 
   return (
-    <div className="min-h-[calc(100vh-80px)] bg-[#fbfbf6] px-4 sm:px-6 py-10">
+    <>
+      <SEO 
+        title="Shop All Collections" 
+        description="Browse our complete collection of premium graphic t-shirts. Sort by categories, price, and discover your new favorite oversized tee."
+        keywords="graphic tees, shop t-shirts, couple chaos collections, oversized t-shirts" 
+      />
+      <div className="min-h-[calc(100vh-80px)] bg-[#fbfbf6] px-4 sm:px-6 py-10">
       
       {/* ── HERO SECTION (Only show on default view) ── */}
       {(activeFilter === "all" && location.pathname === "/") && (
@@ -429,6 +436,7 @@ export default function AllTshirts() {
           )}
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

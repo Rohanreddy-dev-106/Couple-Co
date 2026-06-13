@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../lib/api";
 import { useAuth } from "../context/AuthContext";
+import SEO from "../components/SEO.jsx";
 import { Heart } from "lucide-react";
 
 export default function ProductPage() {
@@ -134,7 +135,13 @@ export default function ProductPage() {
   if (error || !product) return <p className='p-10 text-center text-red-500 font-medium'>{error || "Product not found"}</p>;
 
   return (
-    <div className='mx-auto max-w-7xl px-6 py-12 grid lg:grid-cols-2 gap-12 lg:gap-20 bg-[#fbfbf6] min-h-[calc(100vh-80px)]'>
+    <>
+      <SEO 
+        title={product.title} 
+        description={product.description}
+        keywords={`buy ${product.title}, graphic tee, premium cotton shirt`} 
+      />
+      <div className='mx-auto max-w-7xl px-6 py-12 grid lg:grid-cols-2 gap-12 lg:gap-20 bg-[#fbfbf6] min-h-[calc(100vh-80px)]'>
       {/* IMAGE CONTAINER */}
       <div className='bg-white border-2 border-gray-100 rounded-[40px] p-8 md:p-16 flex items-center justify-center min-h-[500px] animate-fade-in-up opacity-0 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all' style={{ animationDelay: '100ms' }}>
         <div className="bg-[#fbfbf6] rounded-[32px] w-full max-w-md aspect-[4/5] flex items-center justify-center overflow-hidden border-2 border-gray-100">
@@ -245,6 +252,7 @@ export default function ProductPage() {
           </p>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
