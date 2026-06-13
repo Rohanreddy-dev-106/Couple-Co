@@ -38,7 +38,7 @@ export default class Productcontroller {
                 return res.status(404).json(new ApiError(404, "product not found"));
             }
 
-            if (req.user?.role !== "admin" && product.createdBy?.toString() !== req.user?.UserID.toString()) {
+            if (req.user?.role !== "admin" && product.createdBy?.toString() !== req.user?.UserID?.toString()) {
                 return res
                     .status(403)
                     .json(
@@ -81,7 +81,7 @@ export default class Productcontroller {
                 return res.status(404).json(new ApiError(404, "product not found"));
             }
 
-            if (req.user?.role !== "admin" && product.createdBy?.toString() !== req.user?.UserID.toString()) {
+            if (req.user?.role !== "admin" && product.createdBy?.toString() !== req.user?.UserID?.toString()) {
                 return res
                     .status(403)
                     .json(

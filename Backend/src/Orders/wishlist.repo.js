@@ -23,7 +23,7 @@ export default class WishlistRepo {
     async addProduct(userId, productId) {
         const wishlist = await this.getOrCreateWishlist(userId);
         const alreadyExists = wishlist.products.some(
-            (id) => id.toString() === productId.toString()
+            (id) => id?.toString() === productId?.toString()
         );
         if (alreadyExists) {
             return { wishlist, added: false };
@@ -57,7 +57,7 @@ export default class WishlistRepo {
         const wishlist = await WishlistModel.findOne({ userId });
         if (!wishlist) return false;
         return wishlist.products.some(
-            (id) => id.toString() === productId.toString()
+            (id) => id?.toString() === productId?.toString()
         );
     }
 }
