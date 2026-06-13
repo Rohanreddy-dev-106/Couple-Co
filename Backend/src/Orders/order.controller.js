@@ -153,7 +153,7 @@ export default class Ordercontroller {
                                        .digest("hex");
                                        
             if (razorpay_signature === expectedSign) {
-                await this._OrdersRepo.updateOrderStatus(orderIds, "Shipped");
+                await this._OrdersRepo.updateOrderStatus(orderIds, "Payement Done");
                 return res.status(200).json(new APIResponse(200, "Payment verified successfully"));
             } else {
                 return res.status(400).json(new ApiError(400, "Invalid signature"));
