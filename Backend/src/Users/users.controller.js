@@ -56,15 +56,21 @@ export default class Usercontroller {
                 const REFRESH_COOKIE_EXPIRE = 7 * 24 * 60 * 60 * 1000;
 
 
+                const isProduction = process.env.NODE_ENV === "production";
+                
                 // Store token in cookie
                 res.cookie("jwtToken", accesstoken, {
                     maxAge: ACCESS_COOKIE_EXPIRE,
                     httpOnly: true,
+                    secure: isProduction,
+                    sameSite: isProduction ? "none" : "lax"
                 });
 
                 res.cookie("refreshToken", refreshtoken, {
                     maxAge: REFRESH_COOKIE_EXPIRE,
                     httpOnly: true,
+                    secure: isProduction,
+                    sameSite: isProduction ? "none" : "lax"
                 });
 
                 return res.status(200).json(new APIResponse(200, "Login successful", {
@@ -149,14 +155,20 @@ export default class Usercontroller {
             // Refresh token: 7 days
             const REFRESH_COOKIE_EXPIRE = 7 * 24 * 60 * 60 * 1000;
 
+            const isProduction = process.env.NODE_ENV === "production";
+
             res.cookie("jwtToken", accesstoken, {
                 maxAge: ACCESS_COOKIE_EXPIRE,
                 httpOnly: true,
+                secure: isProduction,
+                sameSite: isProduction ? "none" : "lax"
             });
 
             res.cookie("refreshToken", refreshtoken, {
                 maxAge: REFRESH_COOKIE_EXPIRE,
                 httpOnly: true,
+                secure: isProduction,
+                sameSite: isProduction ? "none" : "lax"
             });
 
             return res.status(200).json(new APIResponse(200, "Token is found.."))
@@ -169,11 +181,17 @@ export default class Usercontroller {
         try {
             await this._userrepository.Clearrefreshtoken(req.user.UserID);
 
+            const isProduction = process.env.NODE_ENV === "production";
+
             res.clearCookie("jwtToken", {
                 httpOnly: true,
+                secure: isProduction,
+                sameSite: isProduction ? "none" : "lax"
             });
             res.clearCookie("refreshToken", {
                 httpOnly: true,
+                secure: isProduction,
+                sameSite: isProduction ? "none" : "lax"
             });
 
 
