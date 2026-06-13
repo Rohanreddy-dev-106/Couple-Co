@@ -21,12 +21,13 @@
     "mongoose": "^9.1.4",
     "multer": "^2.0.2",
     "node-cron": "^4.2.1",
+    "razorpay": "^2.9.6",
     "swagger-ui-express": "^5.0.1",
     "winston": "^3.19.0",
     "zod": "^4.3.5"
   },
   "devDependencies": {
-    "autocannon": "^8.0.0",
+    "autocannon": "^2.0.1",
     "nodemon": "^3.1.11"
   }
 }

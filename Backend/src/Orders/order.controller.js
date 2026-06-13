@@ -1,6 +1,13 @@
 import { APIResponse } from "../util/api.response.js";
 import { ApiError } from "../util/api.error.js";
 import OrdersRepo from "./orders.repo.js";
+import Razorpay from "razorpay";
+import crypto from "crypto";
+
+const razorpay = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID || 'rzp_test_1DP5mmOlF5G5ag',
+    key_secret: process.env.RAZORPAY_KEY_SECRET || '51g0jO6X7z2M75y67z2M75y6',
+});
 
 export default class Ordercontroller {
     _OrdersRepo;
@@ -107,15 +114,52 @@ export default class Ordercontroller {
         try {
             const data = req.body;
             data.userId = req.user?.UserID;
-            const order = await this._OrdersRepo.createorders(data);
+            const result = await this._OrdersRepo.createorders(data);
+            
+            const currentKeyId = process.env.RAZORPAY_KEY_ID || 'rzp_test_1DP5mmOlF5G5ag';
+
+            const options = {
+                amount: Math.round(result.totalAmount * 100), // amount in smallest currency unit
+                currency: "INR",
+                receipt: "receipt_" + new Date().getTime(),
+            };
+            
+            const razorpayOrder = await razorpay.orders.create(options);
+            
             return res
                 .status(200)
-                .json(new APIResponse(200, "Order is placed...", order));
+                .json(new APIResponse(200, "Order is placed...", {
+                    razorpayOrder,
+                    orderIds: result.orders,
+                    keyId: currentKeyId
+                }));
         }
         catch (error) {
+            console.error("Placeorder Error:", error);
+            const errorMessage = error.error?.description || error.message || "Failed to create order";
             return res
                 .status(400)
-                .json(new ApiError(400, "Order Creation is failed", error.message));
+                .json(new ApiError(400, errorMessage, error));
+        }
+    }
+
+    async VerifyPayment(req, res, next) {
+        try {
+            const { razorpay_order_id, razorpay_payment_id, razorpay_signature, orderIds } = req.body;
+            
+            const sign = razorpay_order_id + "|" + razorpay_payment_id;
+            const expectedSign = crypto.createHmac("sha256", process.env.RAZORPAY_KEY_SECRET || '51g0jO6X7z2M75y67z2M75y6')
+                                       .update(sign.toString())
+                                       .digest("hex");
+                                       
+            if (razorpay_signature === expectedSign) {
+                await this._OrdersRepo.updateOrderStatus(orderIds, "Shipped");
+                return res.status(200).json(new APIResponse(200, "Payment verified successfully"));
+            } else {
+                return res.status(400).json(new ApiError(400, "Invalid signature"));
+            }
+        } catch (error) {
+            return res.status(400).json(new ApiError(400, "Payment verification failed", error.message));
         }
     }
 

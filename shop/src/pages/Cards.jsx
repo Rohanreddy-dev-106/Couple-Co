@@ -97,10 +97,42 @@ export default function CartPage() {
     }
     setSubmitting(true);
     try {
-      await api.post("/order/createorder", {});
-      alert("Order placed successfully!");
-      setCartItems([]);
-      refreshCartCount();
+      const res = await api.post("/order/createorder", {});
+      const { razorpayOrder, orderIds, keyId } = res.data.data;
+
+      const options = {
+        key: keyId,
+        amount: razorpayOrder.amount,
+        currency: "INR",
+        name: "Couple Chaos",
+        description: "Test Transaction",
+        order_id: razorpayOrder.id,
+        handler: async function (response) {
+          try {
+            await api.post("/order/verify-payment", {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              orderIds: orderIds
+            });
+            alert("Order placed and payment successful!");
+            setCartItems([]);
+            refreshCartCount();
+          } catch (err) {
+            alert("Payment verification failed.");
+          }
+        },
+        theme: {
+          color: "#000000"
+        }
+      };
+
+      const rzp1 = new window.Razorpay(options);
+      rzp1.on("payment.failed", function (response) {
+        alert("Payment failed: " + response.error.description);
+      });
+      rzp1.open();
+
     } catch (err) {
       console.error(err);
       alert(err.response?.data?.errors || err.response?.data?.message || "Failed to place order. Try again.");

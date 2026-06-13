@@ -1,6 +1,7 @@
 import cardModel from "./card.schema.js";
 import orderModel from "./order.schema.js";
 import productModel from "../products/product.schema.js"
+import profileModel from "../Users/user.profile.schema.js";
 import mongoose from "mongoose";
 
 export default class OrdersRepo {
@@ -125,10 +126,13 @@ export default class OrdersRepo {
                 throw new Error("No valid products in cart. Some items may have been removed.");
             }
 
-            const userProfile = await mongoose.model("Profile").findOne({ user: order.userId });
+            const userProfile = await profileModel.findOne({ user: order.userId });
 
             // Use validCartItems (already has updated totals in DB, re-fetch to get correct totals)
             const CreateOrders = await cardModel.find({ _id: { $in: validCartItems.map(c => c._id) } });
+
+            let totalAmount = 0;
+            let createdOrders = [];
 
             for (let orderItem of CreateOrders) {
                 let data = {
@@ -150,15 +154,19 @@ export default class OrdersRepo {
                         addressType: userProfile.addressType
                     } : null
                 };
+                totalAmount += orderItem.total;
                 //order created
                 let orderDoc = new orderModel(data);
-                await orderDoc.save();
+                let savedOrder = await orderDoc.save();
+                createdOrders.push(savedOrder._id);
             }
             // Delete only the cart items that were successfully placed as orders
             let orderID = validCartItems.map(card => card._id);
             if (orderID.length !== 0) {
                 await cardModel.deleteMany({ _id: { $in: orderID } });
             }
+            
+            return { totalAmount, orders: createdOrders };
         }
         catch (error) {
             throw error;
@@ -169,8 +177,8 @@ export default class OrdersRepo {
         try {
             return await orderModel
                 .find({})
-                .populate("userId", "name email")
-                .populate("productId")
+                .populate("userId", "name email")//Replace userId ObjectId with user data
+                .populate("productId")//Replace productId ObjectId with product data
                 .sort({ createdAt: -1 });
         } catch (error) {
             console.log("getAllOrders Error:", error.message);
@@ -183,6 +191,15 @@ export default class OrdersRepo {
             return await orderModel.findByIdAndDelete(orderId);
         } catch (error) {
             console.log("deleteOrder Error:", error.message);
+            throw error;
+        }
+    }
+
+    async updateOrderStatus(orderIds, status) {
+        try {
+            return await orderModel.updateMany({ _id: { $in: orderIds } }, { $set: { status: status } });
+        } catch (error) {
+            console.log("updateOrderStatus Error:", error.message);
             throw error;
         }
     }

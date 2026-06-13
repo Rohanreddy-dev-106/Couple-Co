@@ -2,7 +2,7 @@
 
 A full-stack e-commerce platform for a couple-themed clothing store. Built with a **React + Vite** frontend and a **Node.js / Express** REST API backend, backed by **MongoDB**. The project is production-ready with JWT authentication, role-based access control, cart, wishlist, order management, rate limiting, and Docker support.
 
-> ⚠️ **Payment gateway integration is intentionally excluded** and will be added in a future release.
+> 💳 **Payment gateway integration is fully implemented** using Razorpay.
 
 ---
 
@@ -94,6 +94,8 @@ MONGODB_CONNECTION_STRING="your_mongodb_connection_string"
 ACCESSTOKEN_KEY="your_access_token_secret"
 REFRESHTOKEN_KEY="your_refresh_token_secret"
 FRONTEND_URL="http://localhost:5173"
+RAZORPAY_KEY_ID="your_razorpay_key_id"
+RAZORPAY_KEY_SECRET="your_razorpay_key_secret"
 ```
 
 Start the server:
@@ -183,7 +185,8 @@ All endpoints are prefixed with `/api`. Rate limiting applies globally to all `/
 | PUT | `/update` | 🔒 User | Update cart item |
 | DELETE | `/delete/:id` | 🔒 User | Remove a cart item |
 | DELETE | `/deleteall` | 🔒 User | Clear entire cart |
-| POST | `/createorder` | 🔒 User | Place an order |
+| POST | `/createorder` | 🔒 User | Place an order and generate Razorpay session |
+| POST | `/verify-payment`| 🔒 User | Verify Razorpay payment signature |
 | GET | `/admin/all-orders` | 🔒 Admin | View all orders |
 | DELETE | `/admin/delete-order/:id` | 🔒 Admin | Delete an order |
 
@@ -239,13 +242,13 @@ Role-based access is enforced via the `AccessControl` middleware. Roles: `user` 
 - [x] Docker support
 - [x] Environment variable configuration via `.env`
 - [x] Admin and product seeding on startup
-- [ ] Payment gateway *(coming soon)*
+- [x] Razorpay payment gateway integration
 
 ---
 
 ## 🗺️ Roadmap
 
-- [ ] Razorpay / Stripe payment gateway integration
+- [x] Razorpay payment gateway integration
 - [ ] Order status tracking
 - [ ] Email confirmation on order placement
 - [ ] Product image upload to cloud storage (Cloudinary / S3)
