@@ -276,17 +276,6 @@ Role-based access is enforced via the `AccessControl` middleware. Roles: `user` 
 - [x] Order status tracking via Qikink webhooks
 
 ---
-
-## 🗺️ Roadmap
-
-- [x] Razorpay payment gateway integration
-- [x] Qikink POD fulfillment integration
-- [x] Order status tracking
-- [ ] Email confirmation on order placement
-- [ ] Product image upload to cloud storage (Cloudinary / S3)
-- [ ] Pagination for product listings
-- [ ] Review and rating system
-
 ---
 
 ## 👨‍💻 Author
