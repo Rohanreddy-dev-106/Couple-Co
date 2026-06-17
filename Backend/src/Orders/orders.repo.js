@@ -128,6 +128,11 @@ export default class OrdersRepo {
 
             const userProfile = await profileModel.findOne({ user: order.userId });
 
+            if (!userProfile?.fullName || !userProfile?.phone || !userProfile?.addressLine1 ||
+                !userProfile?.city || !userProfile?.state || !userProfile?.postalCode) {
+                throw new Error("Complete delivery address is required before placing an order");
+            }
+
             // Use validCartItems (already has updated totals in DB, re-fetch to get correct totals)
             const CreateOrders = await cardModel.find({ _id: { $in: validCartItems.map(c => c._id) } });
 
@@ -139,6 +144,7 @@ export default class OrdersRepo {
                     userId: orderItem.user,
                     productId: orderItem.product,
                     quantity: orderItem.quantity,
+                    size: orderItem.size,
                     price: orderItem.price,
                     totalAmount: orderItem.total,
                     shippingAddress: userProfile ? {
@@ -200,6 +206,18 @@ export default class OrdersRepo {
             return await orderModel.updateMany({ _id: { $in: orderIds } }, { $set: { status: status } });
         } catch (error) {
             console.log("updateOrderStatus Error:", error.message);
+            throw error;
+        }
+    }
+
+    async getUserOrders(userId) {
+        try {
+            return await orderModel
+                .find({ userId })
+                .populate("productId")
+                .sort({ createdAt: -1 });
+        } catch (error) {
+            console.log("getUserOrders Error:", error.message);
             throw error;
         }
     }

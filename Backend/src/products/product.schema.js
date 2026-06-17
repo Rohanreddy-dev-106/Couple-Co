@@ -41,6 +41,19 @@ const ProductSchema = new mongoose.Schema(
 
 
 
+        // ── Qikink POD Mapping ───────────────────────────
+        // Default variant ID (fallback when size-specific mapping is not set)
+        qikinkVariantId: {
+            type: String,
+            default: null,
+        },
+        // Per-size variant IDs from the Qikink dashboard (e.g. { S: "123", M: "456" })
+        qikinkVariantIds: {
+            type: Map,
+            of: String,
+            default: {},
+        },
+
         createdBy: {
             type: mongoose.Schema.Types.ObjectId,
             default: null,

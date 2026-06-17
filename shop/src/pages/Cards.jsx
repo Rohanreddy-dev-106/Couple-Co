@@ -110,17 +110,34 @@ export default function CartPage() {
         order_id: razorpayOrder.id,
         handler: async function (response) {
           try {
-            await api.post("/order/verify-payment", {
+            const verifyRes = await api.post("/order/verify-payment", {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
               orderIds: orderIds
             });
-            alert("Order placed and payment successful!");
+
+            const fulfillmentResults = verifyRes.data?.data?.fulfillmentResults || [];
+            const sentCount = fulfillmentResults.filter((r) => r.status === "sent").length;
+            const skippedCount = fulfillmentResults.filter((r) => r.status === "skipped_no_variant").length;
+            const failedCount = fulfillmentResults.filter((r) => r.status === "fulfillment_failed").length;
+
+            let message = "Payment successful! Your order has been placed.";
+            if (sentCount > 0) {
+              message += ` ${sentCount} item(s) sent to fulfillment.`;
+            }
+            if (skippedCount > 0) {
+              message += ` ${skippedCount} item(s) are awaiting manual fulfillment (Qikink variant not configured).`;
+            }
+            if (failedCount > 0) {
+              message += ` ${failedCount} item(s) could not be sent to Qikink — our team will follow up.`;
+            }
+
+            alert(message);
             setCartItems([]);
             refreshCartCount();
           } catch (err) {
-            alert("Payment verification failed.");
+            alert(err.response?.data?.message || "Payment verification failed.");
           }
         },
         theme: {

@@ -1,6 +1,8 @@
 import { APIResponse } from "../util/api.response.js";
 import { ApiError } from "../util/api.error.js";
 import OrdersRepo from "./orders.repo.js";
+import orderModel from "./order.schema.js";
+import { sendOrderToQikink, resolveQikinkVariantId } from "../services/qikink.service.js";
 import Razorpay from "razorpay";
 import crypto from "crypto";
 
@@ -152,14 +154,79 @@ export default class Ordercontroller {
                                        .update(sign.toString())
                                        .digest("hex");
                                        
-            if (razorpay_signature === expectedSign) {
-                await this._OrdersRepo.updateOrderStatus(orderIds, "Payement Done");
-                return res.status(200).json(new APIResponse(200, "Payment verified successfully"));
-            } else {
-                return res.status(400).json(new ApiError(400, "Invalid signature"));
+            if (razorpay_signature !== expectedSign) {
+                return res.status(400).json(new ApiError(400, "Invalid payment signature"));
             }
+
+            // 1. Mark orders as Payment Done
+            await this._OrdersRepo.updateOrderStatus(orderIds, "Payment Done");
+
+            // 2. Push each order to Qikink for POD fulfillment
+            const fulfillmentResults = [];
+            for (const orderId of orderIds) {
+                try {
+                    const order = await orderModel
+                        .findById(orderId)
+                        .populate("productId");
+
+                    if (!order) continue;
+
+                    // Only push if the product has a Qikink variant mapped for this size
+                    if (!resolveQikinkVariantId(order.productId, order.size)) {
+                        console.warn(
+                            `Skipping Qikink push for order ${orderId}: no Qikink variant for size "${order.size || "default"}"`
+                        );
+                        fulfillmentResults.push({ orderId, status: "skipped_no_variant" });
+                        continue;
+                    }
+
+                    const qikinkResult = await sendOrderToQikink({
+                        order,
+                        product: order.productId,
+                        shippingAddress: order.shippingAddress,
+                    });
+
+                    const qikinkOrderId = qikinkResult.qikinkOrderId;
+
+                    await orderModel.findByIdAndUpdate(orderId, {
+                        status: "Sent to Fulfillment",
+                        qikinkOrderId,
+                        fulfilledAt: new Date(),
+                    });
+
+                    fulfillmentResults.push({
+                        orderId,
+                        qikinkOrderId,
+                        status: "sent",
+                    });
+                } catch (fulfillErr) {
+                    console.error(`Qikink push failed for order ${orderId}:`, fulfillErr.message);
+                    // Don't fail the whole payment — log and continue
+                    fulfillmentResults.push({ orderId, status: "fulfillment_failed", error: fulfillErr.message });
+                }
+            }
+
+            return res.status(200).json(
+                new APIResponse(200, "Payment verified and orders sent to fulfillment", {
+                    fulfillmentResults,
+                })
+            );
         } catch (error) {
             return res.status(400).json(new ApiError(400, "Payment verification failed", error.message));
+        }
+    }
+
+    async GetMyOrders(req, res, next) {
+        try {
+            const userId = req.user?.UserID;
+            const result = await this._OrdersRepo.getUserOrders(userId);
+            return res
+                .status(200)
+                .json(new APIResponse(200, "Your orders fetched successfully", result));
+        } catch (error) {
+            return res
+                .status(400)
+                .json(new ApiError(400, "Failed to fetch your orders", error.message));
         }
     }
 

@@ -22,17 +22,34 @@ const Orders = new Schema(
         productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
         shippingAddress: shippingAddressSchema,
         quantity: { type: Number },
+        size: { type: String, default: null },
         price: { type: Number },
         totalAmount: { type: Number },
         status: {
             type: String,
-            enum: ["Pending", "Payement Done"],
+            enum: [
+                "Pending",
+                "Payment Done",       
+                "Sent to Fulfillment", // pushed to Qikink
+                "Processing",          // Qikink is printing
+                "Shipped",             // Qikink dispatched
+                "Delivered",           // delivered to customer
+                "Cancelled",
+            ],
             default: "Pending",
         },
+
+        // ── Qikink Fulfillment ───────────────────────────
+        qikinkOrderId: { type: String, default: null },
+        trackingNumber: { type: String, default: null },
+        trackingUrl: { type: String, default: null },
+        courierName: { type: String, default: null },
+        fulfilledAt: { type: Date, default: null },
     },
     { timestamps: true },
 );
 
 Orders.index({ userId: 1 });
+Orders.index({ qikinkOrderId: 1 });
 
 export default mongoose.model("Order", Orders);

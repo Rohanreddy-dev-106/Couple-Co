@@ -4,6 +4,7 @@ import userrouts from "./src/Users/users.routs.js"
 import ProducrRoute from "./src/products/product.routs.js";
 import managementRouter from "./src/User_Admin_Management/management.routs.js";
 import orderRouter from "./src/Orders/order.routs.js"
+import webhookRouter from "./src/Orders/webhook.routs.js"
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import rateLimit from "express-rate-limit";
@@ -33,6 +34,7 @@ server.use("/api/products",ProducrRoute);
 server.use("/api/management",managementRouter);
 server.use("/api/order",orderRouter);
 server.use("/api/wishlist",wishlistRouter);
+server.use("/api/webhook", webhookRouter);
 
 
 

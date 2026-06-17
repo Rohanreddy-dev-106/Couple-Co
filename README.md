@@ -2,7 +2,8 @@
 
 A full-stack e-commerce platform for a couple-themed clothing store. Built with a **React + Vite** frontend and a **Node.js / Express** REST API backend, backed by **MongoDB**. The project is production-ready with JWT authentication, role-based access control, cart, wishlist, order management, rate limiting, and Docker support.
 
-> 💳 **Payment gateway integration is fully implemented** using Razorpay.
+> 💳 **Payment gateway integration is fully implemented** using Razorpay.  
+> 📦 **Print-on-demand fulfillment** is integrated with [Qikink](https://qikink.com) — orders are automatically sent to Qikink after payment, and shipment updates sync back via webhooks.
 
 ---
 
@@ -26,12 +27,14 @@ couple-co/
 - Product detail pages
 - Add to cart / update quantities / remove items / clear cart
 - Wishlist — add, remove, check, and clear
-- Place orders
+- Place orders with Razorpay checkout
+- Automatic Qikink POD fulfillment after payment verification
+- Order status & shipment tracking (Processing → Shipped → Delivered)
 
 ### 🔐 Admin
 - Admin-seeded on server start (no manual setup)
 - Create, update, and delete products
-- View all orders and delete individual orders
+- View all orders with fulfillment status, Qikink IDs, and tracking info
 - Remove users and other admins
 - View total user count
 
@@ -65,6 +68,8 @@ couple-co/
 | File Uploads | Multer |
 | Scheduling | node-cron |
 | Dev Tools | Nodemon, Autocannon |
+| Payment | Razorpay |
+| Fulfillment | Qikink POD API + webhooks |
 | Containerization | Docker |
 
 ---
@@ -89,14 +94,29 @@ npm install
 Create a `.env` file (use `.env.example` as reference):
 
 ```env
-PORT=4505
+PORT=4000
 MONGODB_CONNECTION_STRING="your_mongodb_connection_string"
 ACCESSTOKEN_KEY="your_access_token_secret"
 REFRESHTOKEN_KEY="your_refresh_token_secret"
 FRONTEND_URL="http://localhost:5173"
 RAZORPAY_KEY_ID="your_razorpay_key_id"
 RAZORPAY_KEY_SECRET="your_razorpay_key_secret"
+
+# Qikink POD fulfillment (credentials from Qikink dashboard)
+QIKINK_API_URL="https://sandbox.qikink.com"
+QIKINK_CLIENT_ID="your_qikink_client_id"
+QIKINK_CLIENT_SECRET="your_qikink_client_secret"
+QIKINK_WEBHOOK_SECRET="your_webhook_secret"
 ```
+
+#### Qikink setup
+
+1. Create a Qikink account and obtain API credentials (`client_id`, `client_secret`).
+2. Map each product to a Qikink **variant ID** in the admin panel when creating products (field: `qikinkVariantId`). For size-specific variants, set `qikinkVariantIds` on the product via the update API.
+3. Register the webhook URL in Qikink Dashboard → Settings → Webhooks:
+   - **Production:** `https://yourdomain.com/api/webhook/qikink`
+   - **Local dev:** use a tunnel (e.g. ngrok) to your backend port.
+4. Order flow: cart checkout → Razorpay payment → `POST /api/order/verify-payment` → orders pushed to Qikink → Qikink webhooks update status and tracking.
 
 Start the server:
 
@@ -104,7 +124,7 @@ Start the server:
 npm run dev
 ```
 
-The server will start on `http://localhost:4505`. On first run it will automatically seed the admin account and product catalogue.
+The server will start on `http://localhost:4000`. On first run it will automatically seed the admin account and product catalogue.
 
 ---
 
@@ -125,7 +145,7 @@ The frontend runs on `http://localhost:5173` by default.
 ```bash
 cd Backend
 docker build -t couple-co-backend .
-docker run -p 4505:4505 --env-file .env couple-co-backend
+docker run -p 4000:4000 --env-file .env couple-co-backend
 ```
 
 ---
@@ -186,9 +206,18 @@ All endpoints are prefixed with `/api`. Rate limiting applies globally to all `/
 | DELETE | `/delete/:id` | 🔒 User | Remove a cart item |
 | DELETE | `/deleteall` | 🔒 User | Clear entire cart |
 | POST | `/createorder` | 🔒 User | Place an order and generate Razorpay session |
-| POST | `/verify-payment`| 🔒 User | Verify Razorpay payment signature |
+| POST | `/verify-payment`| 🔒 User | Verify Razorpay payment and send orders to Qikink |
+| GET | `/my-orders` | 🔒 User | Get current user's orders with tracking |
 | GET | `/admin/all-orders` | 🔒 Admin | View all orders |
 | DELETE | `/admin/delete-order/:id` | 🔒 Admin | Delete an order |
+
+---
+
+### Webhooks — `/api/webhook`
+
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| POST | `/qikink` | Public (optional secret) | Receives Qikink order status & tracking updates |
 
 ---
 
@@ -223,7 +252,7 @@ Role-based access is enforced via the `AccessControl` middleware. Roles: `user` 
 | Product Details | `/product/:id` | Individual product view |
 | Cart | `/cart` | Shopping cart |
 | Wishlist | `/wishlist` | Saved items |
-| Profile | `/profile` | User profile |
+| Profile | `/profile` | User profile, delivery address & order tracking |
 | Contact | `/contact` | Contact page |
 | Admin Panel | `/admin` | Admin dashboard |
 | Login | `/login` | Auth |
@@ -243,13 +272,16 @@ Role-based access is enforced via the `AccessControl` middleware. Roles: `user` 
 - [x] Environment variable configuration via `.env`
 - [x] Admin and product seeding on startup
 - [x] Razorpay payment gateway integration
+- [x] Qikink print-on-demand fulfillment integration
+- [x] Order status tracking via Qikink webhooks
 
 ---
 
 ## 🗺️ Roadmap
 
 - [x] Razorpay payment gateway integration
-- [ ] Order status tracking
+- [x] Qikink POD fulfillment integration
+- [x] Order status tracking
 - [ ] Email confirmation on order placement
 - [ ] Product image upload to cloud storage (Cloudinary / S3)
 - [ ] Pagination for product listings

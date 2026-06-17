@@ -34,6 +34,10 @@ router.post("/verify-payment", jwtAuth, (req, res, next) => {
     cardController.VerifyPayment(req, res, next)
 })
 
+router.get("/my-orders", jwtAuth, (req, res, next) => {
+    cardController.GetMyOrders(req, res, next)
+})
+
 router.get("/admin/all-orders", jwtAuth, AccessControl("admin"), (req, res, next) => {
     cardController.GetAllOrdersAdmin(req, res, next)
 })

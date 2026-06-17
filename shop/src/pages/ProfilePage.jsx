@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import api from "../lib/api";
 import SEO from "../components/SEO.jsx";
-import { User, Phone, MapPin, Building, Flag, CheckCircle } from "lucide-react";
+import { User, Phone, MapPin, Building, Flag, CheckCircle, Package, Truck } from "lucide-react";
 
 export default function ProfilePage() {
   const { user, setUser } = useAuth();
@@ -25,6 +25,33 @@ export default function ProfilePage() {
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
   const [savedProfile, setSavedProfile] = useState(null);
+  const [orders, setOrders] = useState([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
+
+  const getStatusStyles = (status) => {
+    const styles = {
+      Pending: "bg-gray-100 text-gray-700",
+      "Payment Done": "bg-blue-100 text-blue-700",
+      "Sent to Fulfillment": "bg-purple-100 text-purple-700",
+      Processing: "bg-amber-100 text-amber-700",
+      Shipped: "bg-sky-100 text-sky-700",
+      Delivered: "bg-emerald-100 text-emerald-700",
+      Cancelled: "bg-red-100 text-red-700",
+    };
+    return styles[status] || "bg-amber-100 text-amber-700";
+  };
+
+  const fetchOrders = async () => {
+    try {
+      setOrdersLoading(true);
+      const res = await api.get("/order/my-orders");
+      setOrders(res.data?.data || []);
+    } catch (err) {
+      console.error("Failed to load orders:", err);
+    } finally {
+      setOrdersLoading(false);
+    }
+  };
 
   const fetchProfile = async () => {
     try {
@@ -60,6 +87,7 @@ export default function ProfilePage() {
   useEffect(() => {
     if (user) {
       fetchProfile();
+      fetchOrders();
     }
   }, [user]);
 
@@ -341,6 +369,70 @@ export default function ProfilePage() {
           </div>
         </div>
       )}
+
+      {/* ── Order History ── */}
+      <div className="mt-8 w-full max-w-2xl rounded-3xl border-2 border-gray-100 bg-white p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] animate-fade-in-up" style={{ animationDelay: '300ms' }}>
+        <div className="flex items-center gap-2 mb-6">
+          <Package className="h-5 w-5 text-black" strokeWidth={2.5} />
+          <h3 className="font-black text-black uppercase tracking-widest text-sm">Your Orders</h3>
+        </div>
+
+        {ordersLoading ? (
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest animate-pulse">Loading orders...</p>
+        ) : orders.length === 0 ? (
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">No orders yet. Your purchases will appear here.</p>
+        ) : (
+          <div className="space-y-4">
+            {orders.map((order) => {
+              const product = order.productId || {};
+              const orderDate = new Date(order.createdAt).toLocaleDateString("en-IN", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              });
+
+              return (
+                <div key={order._id} className="rounded-2xl border-2 border-gray-100 p-4 sm:p-5 bg-[#fbfbf6]">
+                  <div className="flex flex-col sm:flex-row gap-4 justify-between">
+                    <div className="flex gap-4">
+                      <img
+                        src={product.images || "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500"}
+                        alt={product.name || "Product"}
+                        className="h-16 w-16 rounded-xl object-cover border-2 border-gray-100 bg-white shrink-0"
+                      />
+                      <div>
+                        <p className="font-black text-black text-sm uppercase">{product.name || "Product"}</p>
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">
+                          {orderDate} · Qty {order.quantity}
+                          {order.size ? ` · Size ${order.size}` : ""}
+                        </p>
+                        <p className="text-sm font-black text-black mt-2">₹{order.totalAmount}</p>
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-start sm:items-end gap-2">
+                      <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg ${getStatusStyles(order.status)}`}>
+                        {order.status || "Pending"}
+                      </span>
+                      {(order.trackingNumber || order.trackingUrl) && (
+                        <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest flex items-center gap-1">
+                          <Truck className="h-3.5 w-3.5" />
+                          {order.trackingUrl ? (
+                            <a href={order.trackingUrl} target="_blank" rel="noreferrer" className="text-black underline">
+                              {order.trackingNumber || "Track shipment"}
+                            </a>
+                          ) : (
+                            <span>{order.trackingNumber}</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
 
       </div>
     </>

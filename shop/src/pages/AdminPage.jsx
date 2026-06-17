@@ -45,12 +45,26 @@ export default function AdminPage() {
     category: "T-Shirts",
     images: "",
     sizes: ["S", "M", "L", "XL"],
+    qikinkVariantId: "",
   });
 
   const [submitting, setSubmitting] = useState(false);
   const [formMessage, setFormMessage] = useState({ type: "", text: "" });
 
   const availableSizes = ["S", "M", "L", "XL", "XXL"];
+
+  const getStatusStyles = (status) => {
+    const styles = {
+      Pending: "bg-gray-50 text-gray-700 border-gray-200",
+      "Payment Done": "bg-blue-50 text-blue-700 border-blue-200",
+      "Sent to Fulfillment": "bg-purple-50 text-purple-700 border-purple-200",
+      Processing: "bg-amber-50 text-amber-700 border-amber-200",
+      Shipped: "bg-sky-50 text-sky-700 border-sky-200",
+      Delivered: "bg-emerald-50 text-emerald-700 border-emerald-200",
+      Cancelled: "bg-red-50 text-red-700 border-red-200",
+    };
+    return styles[status] || "bg-amber-50 text-amber-700 border-amber-200";
+  };
 
   // Fetch all products
   const fetchProducts = async () => {
@@ -141,6 +155,7 @@ export default function AdminPage() {
         ...formData,
         price: Number(formData.price),
         stock: Number(formData.stock),
+        qikinkVariantId: formData.qikinkVariantId?.trim() || null,
       };
 
       await api.post("/products/create", payload);
@@ -155,6 +170,7 @@ export default function AdminPage() {
         category: "T-Shirts",
         images: "",
         sizes: ["S", "M", "L", "XL"],
+        qikinkVariantId: "",
       });
       // Refresh products list
       fetchProducts();
@@ -474,8 +490,15 @@ export default function AdminPage() {
                             </span>
                           </div>
                           <p className="text-xs font-bold text-black uppercase tracking-widest">
-                            Qty: <span className="font-black text-base">{order.quantity}</span> | Price: <span className="font-black text-base">₹{order.price}</span>
+                            Qty: <span className="font-black text-base">{order.quantity}</span>
+                            {order.size && <> | Size: <span className="font-black text-base">{order.size}</span></>}
+                            {" "}| Price: <span className="font-black text-base">₹{order.price}</span>
                           </p>
+                          {order.qikinkOrderId && (
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                              Qikink ID: <span className="text-black">{order.qikinkOrderId}</span>
+                            </p>
+                          )}
                         </div>
                       </div>
 
@@ -506,10 +529,22 @@ export default function AdminPage() {
                             <span className="text-[10px] font-bold text-gray-400 block uppercase tracking-widest">Total amount</span>
                             <span className="text-3xl font-black text-black leading-none mt-1 block">₹{order.totalAmount}</span>
                           </div>
-                          <div className="mt-4 flex items-center gap-2">
-                            <span className="inline-flex items-center px-4 py-2 rounded-xl text-[10px] uppercase tracking-widest font-black bg-amber-50 text-amber-700 border-2 border-amber-200">
+                          <div className="mt-4 flex flex-col items-start sm:items-end gap-2">
+                            <span className={`inline-flex items-center px-4 py-2 rounded-xl text-[10px] uppercase tracking-widest font-black border-2 ${getStatusStyles(order.status)}`}>
                               {order.status || "Pending"}
                             </span>
+                            {(order.trackingNumber || order.trackingUrl) && (
+                              <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest text-left sm:text-right">
+                                {order.courierName && <p>Courier: {order.courierName}</p>}
+                                {order.trackingUrl ? (
+                                  <a href={order.trackingUrl} target="_blank" rel="noreferrer" className="text-black underline">
+                                    Track: {order.trackingNumber || "View shipment"}
+                                  </a>
+                                ) : (
+                                  <p>Tracking: {order.trackingNumber}</p>
+                                )}
+                              </div>
+                            )}
                             <button
                               onClick={() => handleDeleteOrder(order._id)}
                               className="p-2 rounded-xl bg-red-50 text-red-600 border-2 border-red-100 hover:bg-red-100 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
@@ -665,6 +700,25 @@ export default function AdminPage() {
                   );
                 })}
               </div>
+            </div>
+
+            {/* Qikink Variant ID */}
+            <div className="space-y-2">
+              <label htmlFor="qikinkVariantId" className="text-xs font-bold text-black uppercase tracking-widest">
+                Qikink Variant ID (optional)
+              </label>
+              <input
+                type="text"
+                id="qikinkVariantId"
+                name="qikinkVariantId"
+                value={formData.qikinkVariantId}
+                onChange={handleInputChange}
+                placeholder="From Qikink dashboard — required for POD fulfillment"
+                className="w-full h-14 rounded-xl border-2 border-gray-100 px-5 font-bold text-black placeholder-gray-300 focus:border-black outline-none transition-colors bg-[#fbfbf6] focus:bg-white"
+              />
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                Orders skip Qikink fulfillment if this is empty. Use per-size IDs via product update API when needed.
+              </p>
             </div>
 
             <button
