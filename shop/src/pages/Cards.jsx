@@ -99,61 +99,24 @@ export default function CartPage() {
     setSubmitting(true);
     try {
       const res = await api.post("/order/createorder", {});
-      const { razorpayOrder, orderIds, keyId } = res.data.data;
+      const { orderIds, fulfillmentResults = [] } = res.data.data;
 
-      const options = {
-        key: keyId,
-        amount: razorpayOrder.amount,
-        currency: "INR",
-        name: "Couple Chaos",
-        description: "Test Transaction",
-        order_id: razorpayOrder.id,
-        handler: async function (response) {
-          try {
-            const verifyRes = await api.post("/order/verify-payment", {
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature,
-              orderIds: orderIds
-            });
+      const sentCount = fulfillmentResults.filter((r) => r.status === "sent").length;
+      const skippedCount = fulfillmentResults.filter((r) => r.status === "skipped_no_variant").length;
+      const failedCount = fulfillmentResults.filter((r) => r.status === "fulfillment_failed").length;
 
-            const fulfillmentResults = verifyRes.data?.data?.fulfillmentResults || [];
-            const sentCount = fulfillmentResults.filter((r) => r.status === "sent").length;
-            const skippedCount = fulfillmentResults.filter((r) => r.status === "skipped_no_variant").length;
-            const failedCount = fulfillmentResults.filter((r) => r.status === "fulfillment_failed").length;
+      let message = "🎉 Order placed successfully!";
+      if (sentCount > 0) message += ` ${sentCount} item(s) sent to fulfillment.`;
+      if (skippedCount > 0) message += ` ${skippedCount} item(s) awaiting manual fulfillment.`;
+      if (failedCount > 0) message += ` ${failedCount} item(s) could not be sent to Qikink — our team will follow up.`;
 
-            let message = "Payment successful! Your order has been placed.";
-            if (sentCount > 0) {
-              message += ` ${sentCount} item(s) sent to fulfillment.`;
-            }
-            if (skippedCount > 0) {
-              message += ` ${skippedCount} item(s) are awaiting manual fulfillment (Qikink variant not configured).`;
-            }
-            if (failedCount > 0) {
-              message += ` ${failedCount} item(s) could not be sent to Qikink — our team will follow up.`;
-            }
-
-            alert(message);
-            setCartItems([]);
-            refreshCartCount();
-          } catch (err) {
-            alert(err.response?.data?.message || "Payment verification failed.");
-          }
-        },
-        theme: {
-          color: "#000000"
-        }
-      };
-
-      const rzp1 = new window.Razorpay(options);
-      rzp1.on("payment.failed", function (response) {
-        alert("Payment failed: " + response.error.description);
-      });
-      rzp1.open();
-
+      alert(message);
+      setCartItems([]);
+      refreshCartCount();
+      navigate("/my-orders");
     } catch (err) {
       console.error(err);
-      alert(err.response?.data?.errors || err.response?.data?.message || "Failed to place order. Try again.");
+      alert(err.response?.data?.message || err.response?.data?.errors || "Failed to place order. Try again.");
     } finally {
       setSubmitting(false);
     }

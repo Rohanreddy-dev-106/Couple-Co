@@ -29,9 +29,8 @@ const Orders = new Schema(
             type: String,
             enum: [
                 "Pending",
-                "Payment Done",       
+                "Processing",          // confirmed and being processed
                 "Sent to Fulfillment", // pushed to Qikink
-                "Processing",          // Qikink is printing
                 "Shipped",             // Qikink dispatched
                 "Delivered",           // delivered to customer
                 "Cancelled",

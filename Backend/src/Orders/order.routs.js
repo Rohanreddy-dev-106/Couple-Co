@@ -30,10 +30,6 @@ router.post("/createorder", jwtAuth, (req, res, next) => {
     cardController.Placeorder(req, res, next)
 })
 
-router.post("/verify-payment", jwtAuth, (req, res, next) => {
-    cardController.VerifyPayment(req, res, next)
-})
-
 router.get("/my-orders", jwtAuth, (req, res, next) => {
     cardController.GetMyOrders(req, res, next)
 })
